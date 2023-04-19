@@ -20,12 +20,12 @@ public class Pigeon implements SOTA_Gyro {
         return new Rotation2d(getYaw());
     }
 
-    public void setAngle(double radians) {
+    public void setGyro(double radians) {
         mPidgeon.setYaw(Math.toDegrees(radians));
     }
 
-    public void setAngle(Rotation2d rotation2d) {
-        setAngle(rotation2d.getRadians());    
+    public void setGyro(Rotation2d rotation2d) {
+        setGyro(rotation2d.getRadians());    
     }
 
     public void resetAngle() {
@@ -33,15 +33,15 @@ public class Pigeon implements SOTA_Gyro {
     }
 
     public double getPitch() {
-        return mPidgeon.getPitch();
+    return Math.toRadians(mPidgeon.getPitch());
     }
 
     public double getRoll() {
-        return mPidgeon.getRoll();
+        return Math.toRadians(mPidgeon.getRoll());
     }
 
     public double getYaw() { 
-        return mPidgeon.getYaw();
+        return Math.toRadians(mPidgeon.getYaw());
     }
     
 }

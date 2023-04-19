@@ -17,21 +17,21 @@ public class NavX implements SOTA_Gyro {
   }
 
   public double getAngle() {
-    return mNavX.getAngle();
+    return Math.toRadians((mNavX.getAngle()));
   }
 
   public Rotation2d getRotation2d() {
     return mNavX.getRotation2d();
   }
 
-  public void setAngle(double radians) {
+  public void setGyro(double radians) {
     mNavX.reset();
     mNavX.setAngleAdjustment(radians);
   }
 
-  public void setAngle(Rotation2d rotation2d) {
+  public void setGyro(Rotation2d rotation2d) {
     mNavX.reset();
-    setAngle(rotation2d.getRadians());    
+    setGyro(rotation2d.getRadians());    
   }
 
   public void resetAngle() {
@@ -40,15 +40,15 @@ public class NavX implements SOTA_Gyro {
   }
 
   public double getPitch() {
-    return mNavX.getPitch();
+    return Math.toRadians(mNavX.getPitch());
   }
 
   public double getRoll() {
-    return mNavX.getRoll();
+    return Math.toRadians(mNavX.getRoll());
   }
 
   public double getYaw() { 
-    return mNavX.getYaw();
+    return Math.toRadians(mNavX.getYaw());
   }
   
 }

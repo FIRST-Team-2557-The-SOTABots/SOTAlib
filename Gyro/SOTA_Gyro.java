@@ -19,6 +19,12 @@ public interface SOTA_Gyro {
     public void setGyro(double radians);
 
     /**
+     * sets the angle of the gyro to a Rotation2d
+     * @param rotation2d
+     */
+    public void setGyro(Rotation2d rotation2d);
+
+    /**
      * Resets the angle of the gyro
      */
     public void resetAngle();

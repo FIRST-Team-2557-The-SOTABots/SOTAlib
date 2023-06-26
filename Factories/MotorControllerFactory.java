@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.AnalogInput;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import SOTAlib.Config.EncoderConfig;
 import SOTAlib.Config.MotorControllerConfig;
@@ -16,6 +17,7 @@ import SOTAlib.MotorController.Falcon;
 import SOTAlib.MotorController.MotorLimits;
 import SOTAlib.MotorController.SOTA_MotorController;
 import SOTAlib.MotorController.SparkMaxDelegate;
+import SOTAlib.MotorController.SOTA_TalonSRX;
 public class MotorControllerFactory {
     
     public static SOTA_MotorController generateFalconDelegate(MotorControllerConfig config){
@@ -47,6 +49,12 @@ public class MotorControllerFactory {
         MotorLimits limits = generateLimits(config.getMotorLimitsConfig());
         sparkMax.setInverted(config.getIsInverted());
         return new SparkMaxDelegate(sparkMax, encoder, limits, config);
+    }
+
+    public static SOTA_MotorController generateTalon(MotorControllerConfig config){
+        WPI_TalonSRX motor = new WPI_TalonSRX(config.getPort());
+        motor.setInverted(config.getIsInverted()); //TODO: this is still incomplete
+        return new SOTA_TalonSRX(motor);
     }
 
     public static MotorLimits generateLimits(MotorLimitsConfig config){

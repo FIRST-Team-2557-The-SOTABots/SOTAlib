@@ -1,7 +1,7 @@
 package SOTAlib.Encoder;
 
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import lib.Config.EncoderConfig;
+import SOTAlib.Config.EncoderConfig;
 
 public class SOTADutyCycleEncoder implements SOTA_Encoder{
     private double offset;

@@ -6,7 +6,7 @@ import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import lib.Swerve.SwerveDriveInterface;
+import SOTAlib.Swerve.SwerveDriveInterface;
 
 public class AutoFactory {
     

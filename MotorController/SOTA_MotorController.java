@@ -2,7 +2,7 @@ package SOTAlib.MotorController;
 
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
-import lib.Encoder.SOTA_Encoder;
+import SOTAlib.Encoder.SOTA_Encoder;
 
 public interface SOTA_MotorController extends MotorController {
     void setInverted(boolean isInverted);

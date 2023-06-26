@@ -1,4 +1,4 @@
-package lib.Gyro;
+package SOTAlib.Gyro;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 

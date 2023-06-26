@@ -1,4 +1,4 @@
-package lib.Pneumatics;
+package SOTAlib.Pneumatics;
 
 public interface GearShifter {
     int getGear();

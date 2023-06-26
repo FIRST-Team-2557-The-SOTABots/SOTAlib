@@ -1,4 +1,4 @@
-package lib.Encoder;
+package SOTAlib.Encoder;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.AnalogInput;

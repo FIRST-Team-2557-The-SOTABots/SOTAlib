@@ -1,4 +1,4 @@
-package lib.Gyro;
+package SOTAlib.Gyro;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 

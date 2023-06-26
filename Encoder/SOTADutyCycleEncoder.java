@@ -1,4 +1,4 @@
-package lib.Encoder;
+package SOTAlib.Encoder;
 
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import lib.Config.EncoderConfig;

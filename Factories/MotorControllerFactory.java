@@ -1,4 +1,4 @@
-package lib.Factories;
+package SOTAlib.Factories;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;

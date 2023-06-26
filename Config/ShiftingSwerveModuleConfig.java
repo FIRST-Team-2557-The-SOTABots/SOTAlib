@@ -1,4 +1,4 @@
-package lib.Config;
+package SOTAlib.Config;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;

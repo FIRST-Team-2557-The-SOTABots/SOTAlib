@@ -1,4 +1,4 @@
-package lib.MotorController;
+package SOTAlib.MotorController;
 
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;

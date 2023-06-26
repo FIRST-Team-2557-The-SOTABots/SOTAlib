@@ -6,17 +6,16 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import lib.Config.EncoderConfig;
-import lib.Config.MotorControllerConfig;
-import lib.Config.MotorLimitsConfig;
-import lib.Encoder.AnalogInputEncoder;
-import lib.Encoder.SOTADutyCycleEncoder;
-import lib.Encoder.SOTA_Encoder;
-import lib.MotorController.Falcon;
-import lib.MotorController.MotorLimits;
-import lib.MotorController.SOTA_MotorController;
-import lib.MotorController.SparkMaxDelegate;
-
+import SOTAlib.Config.EncoderConfig;
+import SOTAlib.Config.MotorControllerConfig;
+import SOTAlib.Config.MotorLimitsConfig;
+import SOTAlib.Encoder.AnalogInputEncoder;
+import SOTAlib.Encoder.SOTADutyCycleEncoder;
+import SOTAlib.Encoder.SOTA_Encoder;
+import SOTAlib.MotorController.Falcon;
+import SOTAlib.MotorController.MotorLimits;
+import SOTAlib.MotorController.SOTA_MotorController;
+import SOTAlib.MotorController.SparkMaxDelegate;
 public class MotorControllerFactory {
     
     public static SOTA_MotorController generateFalconDelegate(MotorControllerConfig config){

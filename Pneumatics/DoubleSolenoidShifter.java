@@ -3,7 +3,7 @@ package SOTAlib.Pneumatics;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import lib.Config.DoubleSolenoidConfig;
+import SOTAlib.Config.DoubleSolenoidConfig;
 
 public class DoubleSolenoidShifter implements GearShifter{
     

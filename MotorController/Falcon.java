@@ -4,8 +4,8 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import lib.Config.MotorControllerConfig;
-import lib.Encoder.SOTA_Encoder;
+import SOTAlib.Config.MotorControllerConfig;
+import SOTAlib.Encoder.SOTA_Encoder;
 
 public class Falcon implements SOTA_MotorController {
     private static final double kNativeCountsPerRevolution = 2048;

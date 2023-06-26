@@ -3,8 +3,8 @@ package SOTAlib.MotorController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 
-import lib.Config.MotorControllerConfig;
-import lib.Encoder.SOTA_Encoder;
+import SOTAlib.Config.MotorControllerConfig;
+import SOTAlib.Encoder.SOTA_Encoder;
 
 public class SparkMaxDelegate implements SOTA_MotorController{
     private final CANSparkMax mMotor;

@@ -1,4 +1,4 @@
-package lib.Config;
+package SOTAlib.Config;
 
 public class SuperStructureConfig {
     private double encoderAtZeroDegrees;

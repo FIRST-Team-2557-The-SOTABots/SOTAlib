@@ -1,4 +1,4 @@
-package lib.Encoder;
+package SOTAlib.Encoder;
 
 public interface SOTA_Encoder {
     public double get();

@@ -1,4 +1,4 @@
-package lib.MotorController;
+package SOTAlib.MotorController;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;

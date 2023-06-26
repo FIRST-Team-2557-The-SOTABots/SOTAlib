@@ -1,4 +1,4 @@
-package lib.MotorController;
+package SOTAlib.MotorController;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;

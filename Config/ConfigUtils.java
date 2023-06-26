@@ -1,4 +1,4 @@
-package lib.Config;
+package SOTAlib.Config;
 
 import java.io.BufferedReader;
 import java.io.File;

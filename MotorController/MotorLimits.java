@@ -1,4 +1,4 @@
-package lib.MotorController;
+package SOTAlib.MotorController;
 
 public class MotorLimits {
     private Double upperLimit;

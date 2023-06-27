@@ -19,6 +19,18 @@ import SOTAlib.MotorController.SOTA_MotorController;
 import SOTAlib.MotorController.SparkMaxDelegate;
 import SOTAlib.MotorController.SOTA_TalonSRX;
 public class MotorControllerFactory {
+
+    public static SOTA_MotorController generateMotorController(MotorControllerConfig config){
+        switch (config.getMotorModel()) {
+            case "Falcon":
+                return generateFalconDelegate(config);
+            case "SparkMax":
+                return generateSparkDelegate(config);
+            case "Talon":
+                return generateTalon(config);
+        }
+        return null; 
+    }
     
     public static SOTA_MotorController generateFalconDelegate(MotorControllerConfig config){
         if(config == null) return null;
@@ -53,8 +65,10 @@ public class MotorControllerFactory {
 
     public static SOTA_MotorController generateTalon(MotorControllerConfig config){
         WPI_TalonSRX motor = new WPI_TalonSRX(config.getPort());
-        motor.setInverted(config.getIsInverted()); //TODO: this is still incomplete
-        return new SOTA_TalonSRX(motor);
+        motor.setInverted(config.getIsInverted());
+        SOTA_Encoder encoder = generateEncoder(config.getEncoderConfig());
+        MotorLimits limits = generateLimits(config.getMotorLimitsConfig());
+        return new SOTA_TalonSRX(motor, encoder, limits, config);
     }
 
     public static MotorLimits generateLimits(MotorLimitsConfig config){

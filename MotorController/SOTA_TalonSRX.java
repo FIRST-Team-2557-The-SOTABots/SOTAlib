@@ -4,17 +4,37 @@ import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import SOTAlib.Config.MotorControllerConfig;
 import SOTAlib.Encoder.SOTA_Encoder;
 
 public class SOTA_TalonSRX implements SOTA_MotorController{
 
-    WPI_TalonSRX motor;
+    private WPI_TalonSRX motor;
+    private SOTA_Encoder encoder;
 
     public SOTA_TalonSRX(WPI_TalonSRX motor){
         this.motor = motor;
+    }
+
+    public SOTA_TalonSRX(WPI_TalonSRX motor, SOTA_Encoder encoder, MotorLimits limits, MotorControllerConfig config) {
+        this.motor = motor;
+        this.encoder = encoder; //TODO: test this
+        setInverted(config.getIsInverted());
+        switch (config.getNeutralOperation()) {
+            case "BRAKE" :
+                setNeutralOperation(NeutralOperation.kBrake);
+                break;
+            case "COAST" : 
+                setNeutralOperation(NeutralOperation.kCoast);
+                break;
+        }
+        if (config.getCurrentLimit() != 0.0) {
+            setCurrentLimit(config.getCurrentLimit());
+        }
     }
 
     @Override
@@ -114,7 +134,8 @@ public class SOTA_TalonSRX implements SOTA_MotorController{
 
     @Override
     public void setCurrentLimit(int amps) {
-        // TODO Auto-generated method stub
+        SupplyCurrentLimitConfiguration config = new SupplyCurrentLimitConfiguration(true, amps, amps, 1.0);
+        motor.configSupplyCurrentLimit(config); //TODO: test this
         
     }
 

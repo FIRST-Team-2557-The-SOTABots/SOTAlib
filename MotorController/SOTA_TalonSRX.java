@@ -3,6 +3,7 @@ package SOTAlib.MotorController;
 import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -48,7 +49,14 @@ public class SOTA_TalonSRX implements SOTA_MotorController{
 
     @Override
     public void setNeutralOperation(NeutralOperation neutralOperation) {
-        // motor.setNeutralMode(neutralOperation); TODO: fix
+        switch(neutralOperation){ //TODO: test this
+            case kBrake:
+                motor.setNeutralMode(NeutralMode.Brake);
+                break;
+            case kCoast:
+                motor.setNeutralMode(NeutralMode.Coast);
+                break;
+        }
     }
 
     @Override

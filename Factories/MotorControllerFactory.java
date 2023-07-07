@@ -43,7 +43,7 @@ public class MotorControllerFactory {
 
     public static SOTA_MotorController generateSparkDelegate(MotorControllerConfig config) {
         if(config == null) {
-            return null;
+            return null; //TODO: throw null exception
         }
         MotorType motorType;
         switch(config.getMotorType()) {
@@ -72,14 +72,14 @@ public class MotorControllerFactory {
     }
 
     public static MotorLimits generateLimits(MotorLimitsConfig config){
-        if(config == null) return null;
+        if(config == null) return null;//TODO: throw null exception
         return new MotorLimits(config.getLowerLimit(), config.getUpperLimit(), config.getFinalLimits());
         
     }
 
     public static SOTA_Encoder generateEncoder(EncoderConfig encoderConfig){
         if (encoderConfig == null) {
-            return null;
+            return null;//TODO: throw null exception
         }
         switch(encoderConfig.getEncoderType()){
             case "ANALOG":

@@ -20,7 +20,7 @@ import SOTAlib.MotorController.SparkMaxDelegate;
 import SOTAlib.MotorController.SOTA_TalonSRX;
 public class MotorControllerFactory {
 
-    public static SOTA_MotorController generateMotorController(MotorControllerConfig config){
+    public static SOTA_MotorController generateMotorController(MotorControllerConfig config) throws IllegalMotorModel{
         switch (config.getMotorModel()) {
             case "Falcon":
                 return generateFalconDelegate(config);
@@ -29,7 +29,7 @@ public class MotorControllerFactory {
             case "Talon":
                 return generateTalon(config);
         }
-        return null; 
+        throw new  IllegalMotorModel("Illegal Motor Model, check config has valid motor types 'Falcon', 'SparkMax', or 'Talon'");
     }
     
     public static SOTA_MotorController generateFalconDelegate(MotorControllerConfig config){

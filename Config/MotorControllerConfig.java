@@ -4,7 +4,7 @@ package SOTAlib.Config;
 public class MotorControllerConfig  {
     private int port;
     private boolean isInverted;
-
+    private String motorModel;
     private String motorType;
     private int countsPerRevolution;
     private String neutralOperation;
@@ -41,6 +41,10 @@ public class MotorControllerConfig  {
 
     public int getCurrentLimit() {
         return currentLimit;
+    }
+
+    public String getMotorModel() {
+        return motorModel;
     }
     
 }

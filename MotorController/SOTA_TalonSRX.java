@@ -1,34 +1,36 @@
 package SOTAlib.MotorController;
 
-import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import SOTAlib.Config.MotorControllerConfig;
 import SOTAlib.Encoder.SOTA_Encoder;
 
-public class SOTA_TalonSRX implements SOTA_MotorController{
+public class SOTA_TalonSRX implements SOTA_MotorController {
 
-    private WPI_TalonSRX motor;
-    private SOTA_Encoder encoder;
+    private WPI_TalonSRX mMotor;
+    private SOTA_Encoder mEncoder;
+    private double kNativeCountsPerRevolution = 0;
+    private MotorPositionLimits mMotorLimits;
 
-    public SOTA_TalonSRX(WPI_TalonSRX motor){
-        this.motor = motor;
+    public SOTA_TalonSRX(WPI_TalonSRX motor) {
+        this.mMotor = motor;
     }
 
-    public SOTA_TalonSRX(WPI_TalonSRX motor, SOTA_Encoder encoder, MotorPositionLimits limits, MotorControllerConfig config) {
-        this.motor = motor;
-        this.encoder = encoder; //TODO: test this
-        setInverted(config.getIsInverted());
+    public SOTA_TalonSRX(WPI_TalonSRX motor, SOTA_Encoder encoder, MotorPositionLimits limits,
+            MotorControllerConfig config) {
+        this.mMotor = motor;
+        this.mEncoder = encoder;
+        this.mMotorLimits = limits;
+        this.kNativeCountsPerRevolution = config.getCountsPerRevolution();
+        setInverted(config.getIsInverted()); // TODO: move to factory
         switch (config.getNeutralOperation()) {
-            case "BRAKE" :
+            case "BRAKE":
                 setNeutralOperation(NeutralOperation.kBrake);
                 break;
-            case "COAST" : 
+            case "COAST":
                 setNeutralOperation(NeutralOperation.kCoast);
                 break;
         }
@@ -39,158 +41,172 @@ public class SOTA_TalonSRX implements SOTA_MotorController{
 
     @Override
     public void set(double speed) {
-        motor.set(ControlMode.PercentOutput, speed);   
+        mMotor.set(ControlMode.PercentOutput, speed);
     }
 
     @Override
     public double get() {
-        return motor.get();
+        return mMotor.get();
     }
 
     @Override
     public void disable() {
-        motor.disable();
+        mMotor.disable();
     }
 
     @Override
     public void stopMotor() {
-        motor.disable();        
+        mMotor.disable();
     }
 
     @Override
     public void setInverted(boolean isInverted) {
-        motor.setInverted(isInverted);        
+        mMotor.setInverted(isInverted);
     }
 
     @Override
     public boolean getInverted() {
-        return motor.getInverted();
+        return mMotor.getInverted();
     }
 
     @Override
     public void setNeutralOperation(NeutralOperation neutralOperation) {
-        switch(neutralOperation){ //TODO: test this
+        switch (neutralOperation) { // TODO: test this
             case kBrake:
-                motor.setNeutralMode(NeutralMode.Brake);
+                mMotor.setNeutralMode(NeutralMode.Brake);
                 break;
             case kCoast:
-                motor.setNeutralMode(NeutralMode.Coast);
+                mMotor.setNeutralMode(NeutralMode.Coast);
                 break;
         }
     }
 
     @Override
     public SOTA_Encoder getEncoder() {
-        return null;
+        return mEncoder;
     }
 
     @Override
     public double getEncoderVelocity() {
-        // TODO Auto-generated method stub
-        return 0;
+        if (mEncoder == null) {
+            return getIntegratedEncoderVelocity();
+        } else {
+            return mEncoder.getVelocity();
+        }
     }
 
     @Override
     public double getEncoderPosition() {
-        // TODO Auto-generated method stub
-        return 0;
+        if (mEncoder == null) {
+            return getIntegratedEncoderPosition();
+        } else {
+            return mEncoder.get();
+        }
     }
 
     @Override
     public double getIntegratedEncoderVelocity() {
-        // TODO Auto-generated method stub
-        return 0;
+        return nativeVelocityToRPM(mMotor.getSelectedSensorVelocity());
     }
 
     @Override
     public double getIntegratedEncoderPosition() {
-        // TODO Auto-generated method stub
-        return 0;
+        return nativePositionToRotations(mMotor.getSelectedSensorPosition());
     }
 
     @Override
-    public double getNativeCountsPerRevolution() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public void resetNativeEncoder() {
-        // TODO Auto-generated method stub
-        
+    public void resetIntegratedEncoder() {
+        mMotor.setSelectedSensorPosition(0.0);
     }
 
     @Override
     public double getMotorTemperature() {
-        // TODO Auto-generated method stub
-        return 0;
+        return mMotor.getTemperature();
     }
 
     @Override
     public double getMotorCurrent() {
-        // TODO Auto-generated method stub
-        return 0;
+        return mMotor.getStatorCurrent();
     }
 
     @Override
     public void setCurrentLimit(int amps) {
         SupplyCurrentLimitConfiguration config = new SupplyCurrentLimitConfiguration(true, amps, amps, 1.0);
-        motor.configSupplyCurrentLimit(config); //TODO: test this
-        
+        mMotor.configSupplyCurrentLimit(config); // TODO: test this
+
     }
 
     @Override
     public MotorPositionLimits getLimits() {
-        // TODO Auto-generated method stub
-        return null;
+        return mMotorLimits;
+    }
+
+    private double nativeVelocityToRPM(double ticks) {
+        return ticks * 600 / kNativeCountsPerRevolution;
+    }
+
+    private double nativePositionToRotations(double ticks) {
+        return ticks / kNativeCountsPerRevolution;
     }
 
     @Override
     public void setPositionLimits(MotorPositionLimits limits) {
-        // TODO Auto-generated method stub
-        
+        this.mMotorLimits = limits;
     }
 
     @Override
     public double getLowerLimit() {
-        // TODO Auto-generated method stub
-        return 0;
+        return mMotorLimits.getLowerLimit();
     }
 
     @Override
     public double getUpperLimit() {
-        // TODO Auto-generated method stub
-        return 0;
+        return mMotorLimits.getUpperLimit();
     }
 
     @Override
     public boolean atUpperLimit() {
-        // TODO Auto-generated method stub
-        return false;
+        if (getLimitState() == MotorPositionLimitStates.AT_UPPER_LIMIT) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public boolean atLowerLimit() {
-        // TODO Auto-generated method stub
-        return false;
+        if (getLimitState() == MotorPositionLimitStates.AT_LOWER_LIMIT) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public MotorPositionLimitStates getLimitState() {
+        double position = getEncoderPosition();
+        if (position < mMotorLimits.getLowerLimit()) {
+            return MotorPositionLimitStates.TOO_LOW;
+        } else if (position > mMotorLimits.getUpperLimit()) {
+            return MotorPositionLimitStates.TOO_HIGH;
+        } else if (position == mMotorLimits.getLowerLimit()) {
+            return MotorPositionLimitStates.AT_LOWER_LIMIT;
+        } else if (position == mMotorLimits.getUpperLimit()) {
+            return MotorPositionLimitStates.AT_UPPER_LIMIT;
+        } else {
+            return MotorPositionLimitStates.IN_RANGE;
+        }
     }
 
     @Override
     public void resetEncoder() {
-        // TODO Auto-generated method stub
-        
+        mEncoder.reset();
     }
 
     @Override
-    public boolean getNeutralOperation() {
-        // TODO Auto-generated method stub
-        return false;
+    public NeutralOperation getNeutralOperation() throws NullNeutralOperationException {
+        throw new NullNeutralOperationException(
+                "SOTA_TalonSRX: Ctre didn't implement getting the Neutral Operation from the motor. If you really need to get the Neutral Operation keep track of it in a seperate variable or get build to use a different motor. If you actually get this error email me howardwalz@gmail.com, good luck! :)");
     }
 
-    @Override
-    public void setNeutralOperation() {
-        // TODO Auto-generated method stub
-        
-    }
-    
 }

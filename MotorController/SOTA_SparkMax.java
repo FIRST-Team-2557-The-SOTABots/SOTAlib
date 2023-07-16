@@ -1,5 +1,6 @@
 package SOTAlib.MotorController;
 
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 
@@ -81,25 +82,21 @@ public class SOTA_SparkMax implements SOTA_MotorController{
     }
 
     public double getEncoderVelocity() {
-        if (mEncoder == null) return getNativeEncoderVelocity();
+        if (mEncoder == null) return getIntegratedEncoderVelocity();
         return mEncoder.getVelocity();
     }
 
     public double getEncoderPosition() {
-        if (mEncoder == null) return getNativeEncoderPosition();
+        if (mEncoder == null) return getIntegratedEncoderPosition();
         return mEncoder.get();
     }
 
-    public double getNativeEncoderVelocity() {
+    public double getIntegratedEncoderVelocity() {
         return mMotor.getEncoder().getVelocity();
     }
 
-    public double getNativeEncoderPosition() {
+    public double getIntegratedEncoderPosition() {
         return mMotor.getEncoder().getPosition();
-    }
-
-    public double getNativeCountsPerRevolution() {
-        return mMotor.getEncoder().getCountsPerRevolution();
     }
 
     public void resetNativeEncoder() {
@@ -136,38 +133,68 @@ public class SOTA_SparkMax implements SOTA_MotorController{
     }
 
     @Override
+    public void resetIntegratedEncoder() {
+       mMotor.getEncoder().setPosition(0); 
+    }
+
+    @Override
     public double getLowerLimit() {
-        // TODO Auto-generated method stub
-        return 0;
+       return mMotorLimits.getLowerLimit(); 
     }
 
     @Override
     public double getUpperLimit() {
-        // TODO Auto-generated method stub
-        return 0;
+       return mMotorLimits.getUpperLimit(); 
     }
 
     @Override
     public boolean atUpperLimit() {
-        // TODO Auto-generated method stub
+       if (getLimitState() == MotorPositionLimitStates.AT_UPPER_LIMIT) {
+        return true;
+       }else {
         return false;
+       } 
     }
 
     @Override
     public boolean atLowerLimit() {
-        // TODO Auto-generated method stub
+      if (getLimitState() == MotorPositionLimitStates.AT_LOWER_LIMIT){
+        return true;
+      }else {
         return false;
+      } 
+    }
+
+    @Override
+    public MotorPositionLimitStates getLimitState() {
+        double position = getEncoderPosition();
+        if (position < mMotorLimits.getLowerLimit()) {
+            return MotorPositionLimitStates.TOO_LOW;
+        }else if(position > mMotorLimits.getUpperLimit()) {
+            return MotorPositionLimitStates.TOO_HIGH;
+        }else if (position == mMotorLimits.getLowerLimit()) {
+            return MotorPositionLimitStates.AT_LOWER_LIMIT;
+        }else if (position == mMotorLimits.getUpperLimit()) {
+            return MotorPositionLimitStates.AT_UPPER_LIMIT;
+        }else {
+            return MotorPositionLimitStates.IN_RANGE;
+        }
     }
 
     @Override
     public void resetEncoder() {
-        // TODO Auto-generated method stub
-        
+       mEncoder.reset(); 
     }
 
     @Override
-    public boolean getNeutralOperation() {
-        return mMotor.getIdleMode() == IdleMode.kBrake;
+    public NeutralOperation getNeutralOperation() throws NullNeutralOperationException {
+       switch (mMotor.getIdleMode()) {
+        case kBrake:
+            return NeutralOperation.kBrake; 
+        case kCoast:
+            return NeutralOperation.kCoast;
+        default:
+            throw new NullNeutralOperationException("SOTA_SparkMax no idle mode returned by SparkMax");
+       }
     }
-
 }

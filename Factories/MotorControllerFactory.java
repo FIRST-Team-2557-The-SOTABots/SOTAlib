@@ -14,7 +14,7 @@ import SOTAlib.Encoder.AnalogInputEncoder;
 import SOTAlib.Encoder.SOTADutyCycleEncoder;
 import SOTAlib.Encoder.SOTA_Encoder;
 import SOTAlib.MotorController.Falcon;
-import SOTAlib.MotorController.MotorLimits;
+import SOTAlib.MotorController.MotorPositionLimits;
 import SOTAlib.MotorController.SOTA_MotorController;
 import SOTAlib.MotorController.SparkMaxDelegate;
 import SOTAlib.MotorController.SOTA_TalonSRX;
@@ -36,7 +36,7 @@ public class MotorControllerFactory {
         if(config == null) return null;
         WPI_TalonFX motor = new WPI_TalonFX(config.getPort());        
         SOTA_Encoder encoder =  generateEncoder(config.getEncoderConfig());
-        MotorLimits limits = generateLimits(config.getMotorLimitsConfig());
+        MotorPositionLimits limits = generateLimits(config.getMotorLimitsConfig());
 
         return new Falcon(motor, encoder, limits, config);
     }
@@ -58,7 +58,7 @@ public class MotorControllerFactory {
         }
         CANSparkMax sparkMax = new CANSparkMax(config.getPort(), motorType);
         SOTA_Encoder encoder = generateEncoder(config.getEncoderConfig());
-        MotorLimits limits = generateLimits(config.getMotorLimitsConfig());
+        MotorPositionLimits limits = generateLimits(config.getMotorLimitsConfig());
         sparkMax.setInverted(config.getIsInverted());
         return new SparkMaxDelegate(sparkMax, encoder, limits, config);
     }
@@ -67,13 +67,13 @@ public class MotorControllerFactory {
         WPI_TalonSRX motor = new WPI_TalonSRX(config.getPort());
         motor.setInverted(config.getIsInverted());
         SOTA_Encoder encoder = generateEncoder(config.getEncoderConfig());
-        MotorLimits limits = generateLimits(config.getMotorLimitsConfig());
+        MotorPositionLimits limits = generateLimits(config.getMotorLimitsConfig());
         return new SOTA_TalonSRX(motor, encoder, limits, config);
     }
 
-    public static MotorLimits generateLimits(MotorLimitsConfig config){
+    public static MotorPositionLimits generateLimits(MotorLimitsConfig config){
         if(config == null) return null;//TODO: throw null exception
-        return new MotorLimits(config.getLowerLimit(), config.getUpperLimit(), config.getFinalLimits());
+        return new MotorPositionLimits(config.getLowerLimit(), config.getUpperLimit(), config.getFinalLimits());
         
     }
 

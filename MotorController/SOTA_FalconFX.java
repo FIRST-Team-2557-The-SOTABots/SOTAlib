@@ -14,7 +14,7 @@ public class SOTA_FalconFX implements SOTA_MotorController {
     private MotorPositionLimits mMotorLimits;
 
     // TODO: check these constructors
-    public SOTA_FalconFX(WPI_TalonFX motor, MotorControllerConfig config){
+    public SOTA_FalconFX(WPI_TalonFX motor, MotorControllerConfig config) {
         this(motor, (SOTA_Encoder) null, config);
     }
 
@@ -26,15 +26,16 @@ public class SOTA_FalconFX implements SOTA_MotorController {
         this(motor, (SOTA_Encoder) null, limits, config);
     }
 
-    public SOTA_FalconFX(WPI_TalonFX motor, SOTA_Encoder encoder, MotorPositionLimits limits, MotorControllerConfig config) {
+    public SOTA_FalconFX(WPI_TalonFX motor, SOTA_Encoder encoder, MotorPositionLimits limits,
+            MotorControllerConfig config) {
         this.mMotor = motor;
         this.mEncoder = encoder;
         setInverted(config.getIsInverted());
         switch (config.getNeutralOperation()) {
-            case "BRAKE" :
+            case "BRAKE":
                 setNeutralOperation(NeutralOperation.kBrake);
                 break;
-            case "COAST" : 
+            case "COAST":
                 setNeutralOperation(NeutralOperation.kCoast);
                 break;
         }
@@ -45,25 +46,25 @@ public class SOTA_FalconFX implements SOTA_MotorController {
     }
 
     public void set(double speed) {
-        if(mMotorLimits != null){
-            if(speed < 0){
-                if(mMotorLimits.getLowerLimit() > getEncoderPosition()) speed = 0;
-            }else if(speed > 0){
-                if(mMotorLimits.getUpperLimit() < getEncoderPosition()) speed = 0;
+        if (mMotorLimits != null) {
+            if (speed < 0) {
+                if (mMotorLimits.getLowerLimit() > getEncoderPosition())
+                    speed = 0;
+            } else if (speed > 0) {
+                if (mMotorLimits.getUpperLimit() < getEncoderPosition())
+                    speed = 0;
             }
-            
-        }
-        mMotor.set(TalonFXControlMode.PercentOutput, speed);        
-    }
 
-    
+        }
+        mMotor.set(TalonFXControlMode.PercentOutput, speed);
+    }
 
     public double get() {
         return mMotor.getMotorOutputPercent();
     }
 
     public void setInverted(boolean isInverted) {
-        mMotor.setInverted(isInverted);        
+        mMotor.setInverted(isInverted);
     }
 
     public boolean getInverted() {
@@ -72,14 +73,14 @@ public class SOTA_FalconFX implements SOTA_MotorController {
 
     public void setNeutralOperation(NeutralOperation neutralOperation) {
         switch (neutralOperation) {
-            case kBrake :
+            case kBrake:
                 mMotor.setNeutralMode(NeutralMode.Brake);
                 break;
-            case kCoast :
+            case kCoast:
                 mMotor.setNeutralMode(NeutralMode.Coast);
                 break;
         }
-        
+
     }
 
     public SOTA_Encoder getEncoder() {
@@ -87,26 +88,30 @@ public class SOTA_FalconFX implements SOTA_MotorController {
     }
 
     public double getEncoderVelocity() {
-        return mMotor.getSelectedSensorVelocity();
+        if (mEncoder == null) {
+            return getIntegratedEncoderVelocity();
+        } else {
+            return mEncoder.getVelocity();
+        }
     }
 
     public double getEncoderPosition() {
-        return mEncoder.get();
+        if (mEncoder == null) {
+            return getIntegratedEncoderPosition();
+        } else {
+            return mEncoder.get();
+        }
     }
 
-    public double getNativeEncoderVelocity() {
-        return mMotor.getSelectedSensorVelocity();
+    public double getIntegratedEncoderVelocity() {
+        return nativeVelocityToRPM(mMotor.getSelectedSensorVelocity());
     }
 
-    public double getNativeEncoderPosition() {
-        return mMotor.getSelectedSensorPosition();
+    public double getIntegratedEncoderPosition() {
+        return nativePositionToRotations(mMotor.getSelectedSensorPosition());
     }
 
-    public double getNativeCountsPerRevolution() {
-        return kNativeCountsPerRevolution;
-    }
-
-    public void resetNativeEncoder() {
+    public void resetIntegratedEncoder() {
         mMotor.setSelectedSensorPosition(0.0);
     }
 
@@ -118,9 +123,10 @@ public class SOTA_FalconFX implements SOTA_MotorController {
         return mMotor.getStatorCurrent();
     }
 
-    // TODO: arbitrary number for current limits works for swerve but who knows what will happen
+    // TODO: arbitrary number for current limits works for swerve but who knows what
+    // will happen
     public void setCurrentLimit(int amps) {
-        StatorCurrentLimitConfiguration config = new StatorCurrentLimitConfiguration(true, amps, amps, 1.0); 
+        StatorCurrentLimitConfiguration config = new StatorCurrentLimitConfiguration(true, amps, amps, 1.0);
         mMotor.configStatorCurrentLimit(config);
     }
 
@@ -133,56 +139,73 @@ public class SOTA_FalconFX implements SOTA_MotorController {
     }
 
     public void disable() {
-        mMotor.neutralOutput();        
+        mMotor.neutralOutput();
     }
 
     public void stopMotor() {
         mMotor.neutralOutput();
-        
+    }
+
+    private double nativeVelocityToRPM(double ticks) {
+        return ticks * 600 / kNativeCountsPerRevolution;
+    }
+
+    private double nativePositionToRotations(double ticks) {
+        return ticks / kNativeCountsPerRevolution;
     }
 
     @Override
     public double getLowerLimit() {
-        // TODO Auto-generated method stub
-        return 0;
+        return mMotorLimits.getLowerLimit();
     }
 
     @Override
     public double getUpperLimit() {
-        // TODO Auto-generated method stub
-        return 0;
+        return mMotorLimits.getUpperLimit();
     }
 
     @Override
     public boolean atUpperLimit() {
-        // TODO Auto-generated method stub
+       if (getLimitState() == MotorPositionLimitStates.AT_UPPER_LIMIT) {
+        return true;
+       } else {
         return false;
+       }
     }
 
     @Override
     public boolean atLowerLimit() {
-        // TODO Auto-generated method stub
+       if (getLimitState() == MotorPositionLimitStates.AT_LOWER_LIMIT) {
+        return true;
+       } else {
         return false;
+       }
+    }
+
+    @Override
+    public MotorPositionLimitStates getLimitState() {
+        double position = getEncoderPosition();
+        if (position < mMotorLimits.getLowerLimit()) {
+            return MotorPositionLimitStates.TOO_LOW;
+        }else if(position > mMotorLimits.getUpperLimit()) {
+            return MotorPositionLimitStates.TOO_HIGH;
+        }else if (position == mMotorLimits.getLowerLimit()) {
+            return MotorPositionLimitStates.AT_LOWER_LIMIT;
+        }else if (position == mMotorLimits.getUpperLimit()) {
+            return MotorPositionLimitStates.AT_UPPER_LIMIT;
+        }else {
+            return MotorPositionLimitStates.IN_RANGE;
+        }
     }
 
     @Override
     public void resetEncoder() {
-        // TODO Auto-generated method stub
-        
+        mEncoder.reset();
     }
 
     @Override
-    public boolean getNeutralOperation() {
-        // TODO Auto-generated method stub
-        return false;
+    public NeutralOperation getNeutralOperation() throws NullNeutralOperationException {
+        throw new NullNeutralOperationException(
+                "SOTA_FalconFX: Ctre didn't implement getting the Neutral Operation from the motor. If you really need to get the Neutral Operation keep track of it in a seperate variable or get build to use a different motor. If you actually get this error email me howardwalz@gmail.com, good luck! :)");
     }
-
-    @Override
-    public void setNeutralOperation() {
-        // TODO Auto-generated method stub
-        
-    }
-
-    
-
 }

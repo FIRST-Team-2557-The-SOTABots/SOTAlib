@@ -48,7 +48,7 @@ public interface SOTA_MotorController extends MotorController {
      * Resets position of integrated encoder, not the composite SOTA_MotorController
      * SOTA_Encoder combo
      */
-    void resetNativeEncoder();
+    void resetIntegratedEncoder();
 
     /**
      * 
@@ -129,7 +129,8 @@ public interface SOTA_MotorController extends MotorController {
     /**
      * 
      * @return Current Neutral Operation from NeutralOperation Enum
+     * @throws NullNeutralOperationException
      */
-    NeutralOperation getNeutralOperation();
+    NeutralOperation getNeutralOperation() throws NullNeutralOperationException;
 
 }

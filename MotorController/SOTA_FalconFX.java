@@ -7,26 +7,26 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import SOTAlib.Config.MotorControllerConfig;
 import SOTAlib.Encoder.SOTA_Encoder;
 
-public class Falcon implements SOTA_MotorController {
+public class SOTA_FalconFX implements SOTA_MotorController {
     private static final double kNativeCountsPerRevolution = 2048;
     private final WPI_TalonFX mMotor;
     private final SOTA_Encoder mEncoder;
-    private MotorLimits mMotorLimits;
+    private MotorPositionLimits mMotorLimits;
 
     // TODO: check these constructors
-    public Falcon(WPI_TalonFX motor, MotorControllerConfig config){
+    public SOTA_FalconFX(WPI_TalonFX motor, MotorControllerConfig config){
         this(motor, (SOTA_Encoder) null, config);
     }
 
-    public Falcon(WPI_TalonFX motor, SOTA_Encoder encoder, MotorControllerConfig config) {
-        this(motor, encoder, (MotorLimits) null, config);
+    public SOTA_FalconFX(WPI_TalonFX motor, SOTA_Encoder encoder, MotorControllerConfig config) {
+        this(motor, encoder, (MotorPositionLimits) null, config);
     }
 
-    public Falcon(WPI_TalonFX motor, MotorLimits limits, MotorControllerConfig config) {
+    public SOTA_FalconFX(WPI_TalonFX motor, MotorPositionLimits limits, MotorControllerConfig config) {
         this(motor, (SOTA_Encoder) null, limits, config);
     }
 
-    public Falcon(WPI_TalonFX motor, SOTA_Encoder encoder, MotorLimits limits, MotorControllerConfig config) {
+    public SOTA_FalconFX(WPI_TalonFX motor, SOTA_Encoder encoder, MotorPositionLimits limits, MotorControllerConfig config) {
         this.mMotor = motor;
         this.mEncoder = encoder;
         setInverted(config.getIsInverted());
@@ -124,11 +124,11 @@ public class Falcon implements SOTA_MotorController {
         mMotor.configStatorCurrentLimit(config);
     }
 
-    public void setLimits(MotorLimits limits) {
+    public void setPositionLimits(MotorPositionLimits limits) {
         mMotorLimits = limits;
     }
 
-    public MotorLimits getLimits() {
+    public MotorPositionLimits getLimits() {
         return mMotorLimits;
     }
 

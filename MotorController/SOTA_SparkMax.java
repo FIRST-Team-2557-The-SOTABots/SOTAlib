@@ -6,24 +6,24 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import SOTAlib.Config.MotorControllerConfig;
 import SOTAlib.Encoder.SOTA_Encoder;
 
-public class SparkMaxDelegate implements SOTA_MotorController{
+public class SOTA_SparkMax implements SOTA_MotorController{
     private final CANSparkMax mMotor;
     private final SOTA_Encoder mEncoder;
-    private MotorLimits mMotorLimits;
+    private MotorPositionLimits mMotorLimits;
     // TODO: check these constructors
-    public SparkMaxDelegate(CANSparkMax motor, MotorControllerConfig config) {
+    public SOTA_SparkMax(CANSparkMax motor, MotorControllerConfig config) {
         this(motor, (SOTA_Encoder) null, config);
     }
 
-    public SparkMaxDelegate(CANSparkMax motor, SOTA_Encoder encoder, MotorControllerConfig config) {
-        this(motor, encoder, (MotorLimits) null, config);
+    public SOTA_SparkMax(CANSparkMax motor, SOTA_Encoder encoder, MotorControllerConfig config) {
+        this(motor, encoder, (MotorPositionLimits) null, config);
     }
 
-    public SparkMaxDelegate(CANSparkMax motor, MotorLimits limits, MotorControllerConfig config){
+    public SOTA_SparkMax(CANSparkMax motor, MotorPositionLimits limits, MotorControllerConfig config){
         this(motor, (SOTA_Encoder) null, limits ,config);
     }
 
-    public SparkMaxDelegate(CANSparkMax motor, SOTA_Encoder encoder, MotorLimits limits, MotorControllerConfig config){
+    public SOTA_SparkMax(CANSparkMax motor, SOTA_Encoder encoder, MotorPositionLimits limits, MotorControllerConfig config){
         this.mMotor = motor;
         this.mEncoder = encoder;
         this.mMotorLimits = limits;
@@ -118,11 +118,11 @@ public class SparkMaxDelegate implements SOTA_MotorController{
         return mMotor.getMotorTemperature();
     }
 
-    public MotorLimits getLimits() {
+    public MotorPositionLimits getLimits() {
         return mMotorLimits;
     }
 
-    public void setLimits(MotorLimits limits) {
+    public void setPositionLimits(MotorPositionLimits limits) {
         mMotorLimits = limits;
     }
 
@@ -169,12 +169,5 @@ public class SparkMaxDelegate implements SOTA_MotorController{
     public boolean getNeutralOperation() {
         return mMotor.getIdleMode() == IdleMode.kBrake;
     }
-
-    @Override
-    public void setNeutralOperation() {
-        // TODO Auto-generated method stub
-        
-    }
-
 
 }

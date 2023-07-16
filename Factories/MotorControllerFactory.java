@@ -13,10 +13,10 @@ import SOTAlib.Config.MotorLimitsConfig;
 import SOTAlib.Encoder.AnalogInputEncoder;
 import SOTAlib.Encoder.SOTADutyCycleEncoder;
 import SOTAlib.Encoder.SOTA_Encoder;
-import SOTAlib.MotorController.Falcon;
+import SOTAlib.MotorController.SOTA_FalconFX;
 import SOTAlib.MotorController.MotorPositionLimits;
 import SOTAlib.MotorController.SOTA_MotorController;
-import SOTAlib.MotorController.SparkMaxDelegate;
+import SOTAlib.MotorController.SOTA_SparkMax;
 import SOTAlib.MotorController.SOTA_TalonSRX;
 public class MotorControllerFactory {
 
@@ -38,7 +38,7 @@ public class MotorControllerFactory {
         SOTA_Encoder encoder =  generateEncoder(config.getEncoderConfig());
         MotorPositionLimits limits = generateLimits(config.getMotorLimitsConfig());
 
-        return new Falcon(motor, encoder, limits, config);
+        return new SOTA_FalconFX(motor, encoder, limits, config);
     }
 
     public static SOTA_MotorController generateSparkDelegate(MotorControllerConfig config) {
@@ -60,7 +60,7 @@ public class MotorControllerFactory {
         SOTA_Encoder encoder = generateEncoder(config.getEncoderConfig());
         MotorPositionLimits limits = generateLimits(config.getMotorLimitsConfig());
         sparkMax.setInverted(config.getIsInverted());
-        return new SparkMaxDelegate(sparkMax, encoder, limits, config);
+        return new SOTA_SparkMax(sparkMax, encoder, limits, config);
     }
 
     public static SOTA_MotorController generateTalon(MotorControllerConfig config){

@@ -20,7 +20,7 @@ public class SOTA_TalonSRX implements SOTA_MotorController{
         this.motor = motor;
     }
 
-    public SOTA_TalonSRX(WPI_TalonSRX motor, SOTA_Encoder encoder, MotorLimits limits, MotorControllerConfig config) {
+    public SOTA_TalonSRX(WPI_TalonSRX motor, SOTA_Encoder encoder, MotorPositionLimits limits, MotorControllerConfig config) {
         this.motor = motor;
         this.encoder = encoder; //TODO: test this
         setInverted(config.getIsInverted());
@@ -97,13 +97,13 @@ public class SOTA_TalonSRX implements SOTA_MotorController{
     }
 
     @Override
-    public double getNativeEncoderVelocity() {
+    public double getIntegratedEncoderVelocity() {
         // TODO Auto-generated method stub
         return 0;
     }
 
     @Override
-    public double getNativeEncoderPosition() {
+    public double getIntegratedEncoderPosition() {
         // TODO Auto-generated method stub
         return 0;
     }
@@ -140,13 +140,13 @@ public class SOTA_TalonSRX implements SOTA_MotorController{
     }
 
     @Override
-    public MotorLimits getLimits() {
+    public MotorPositionLimits getLimits() {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public void setLimits(MotorLimits limits) {
+    public void setPositionLimits(MotorPositionLimits limits) {
         // TODO Auto-generated method stub
         
     }

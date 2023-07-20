@@ -1,48 +1,56 @@
 package SOTAlib.MotorController;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import SOTAlib.MotorController.NullConfigException;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import SOTAlib.Config.MotorControllerConfig;
 import SOTAlib.Encoder.SOTA_Encoder;
+import SOTAlib.Factories.EncoderFactory;
 
 public class SOTA_FalconFX implements SOTA_MotorController {
-    private static final double kNativeCountsPerRevolution = 2048;
+    private double kNativeCountsPerRevolution = 2048;
     private final WPI_TalonFX mMotor;
     private final SOTA_Encoder mEncoder;
     private MotorPositionLimits mMotorLimits;
 
-    // TODO: check these constructors
-    public SOTA_FalconFX(WPI_TalonFX motor, MotorControllerConfig config) {
-        this(motor, (SOTA_Encoder) null, config);
-    }
 
-    public SOTA_FalconFX(WPI_TalonFX motor, SOTA_Encoder encoder, MotorControllerConfig config) {
-        this(motor, encoder, (MotorPositionLimits) null, config);
-    }
-
-    public SOTA_FalconFX(WPI_TalonFX motor, MotorPositionLimits limits, MotorControllerConfig config) {
-        this(motor, (SOTA_Encoder) null, limits, config);
-    }
-
-    public SOTA_FalconFX(WPI_TalonFX motor, SOTA_Encoder encoder, MotorPositionLimits limits,
-            MotorControllerConfig config) {
-        this.mMotor = motor;
-        this.mEncoder = encoder;
-        setInverted(config.getIsInverted());
+    public SOTA_FalconFX(MotorControllerConfig config) throws NullConfigException {
+        if (config == null)
+            throw new NullConfigException("SOTA_FalconFX: config not created");
+        this.mMotor = new WPI_TalonFX(config.getPort());
+        mMotor.setInverted(config.getIsInverted());
         switch (config.getNeutralOperation()) {
             case "BRAKE":
-                setNeutralOperation(NeutralOperation.kBrake);
-                break;
+                mMotor.setNeutralMode(NeutralMode.Brake);
             case "COAST":
-                setNeutralOperation(NeutralOperation.kCoast);
-                break;
-        }
-        if (config.getCurrentLimit() != 0.0) {
-            setCurrentLimit(config.getCurrentLimit());
+                mMotor.setNeutralMode(NeutralMode.Coast);
         }
 
+        System.out.println("SOTA_FalconFX: Current Limit: " + config.getCurrentLimit());
+        if (config.getCurrentLimit() != 0) {
+            StatorCurrentLimitConfiguration currentConfig = new StatorCurrentLimitConfiguration(true,
+                    config.getCurrentLimit(), config.getCurrentLimit(), 1.0);
+            mMotor.configStatorCurrentLimit(currentConfig);
+        } else {
+            System.out.println("SOTA_FalconFX: INFO: no current limit");
+        }
+
+        try {
+            MotorPositionLimits limits = new MotorPositionLimits(config.getMotorLimitsConfig().getLowerLimit(),
+                    config.getMotorLimitsConfig().getUpperLimit(), config.getMotorLimitsConfig().getFinalLimits());
+            this.mMotorLimits = limits;
+        } catch (NullPointerException e) {
+            System.out.println("SOTA_FalconFX: INFO: no motor limits");
+        }
+
+        try {
+            SOTA_Encoder encoder = EncoderFactory.generateEncoder(config.getEncoderConfig());
+            this.mEncoder = encoder;
+        }catch (Exception e) {
+            throw new RuntimeException("Failed to generate Encoder", e); //TODO: make work
+        }
     }
 
     public void set(double speed) {
@@ -166,20 +174,20 @@ public class SOTA_FalconFX implements SOTA_MotorController {
 
     @Override
     public boolean atUpperLimit() {
-       if (getLimitState() == MotorPositionLimitStates.AT_UPPER_LIMIT) {
-        return true;
-       } else {
-        return false;
-       }
+        if (getLimitState() == MotorPositionLimitStates.AT_UPPER_LIMIT) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public boolean atLowerLimit() {
-       if (getLimitState() == MotorPositionLimitStates.AT_LOWER_LIMIT) {
-        return true;
-       } else {
-        return false;
-       }
+        if (getLimitState() == MotorPositionLimitStates.AT_LOWER_LIMIT) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -187,13 +195,13 @@ public class SOTA_FalconFX implements SOTA_MotorController {
         double position = getEncoderPosition();
         if (position < mMotorLimits.getLowerLimit()) {
             return MotorPositionLimitStates.TOO_LOW;
-        }else if(position > mMotorLimits.getUpperLimit()) {
+        } else if (position > mMotorLimits.getUpperLimit()) {
             return MotorPositionLimitStates.TOO_HIGH;
-        }else if (position == mMotorLimits.getLowerLimit()) {
+        } else if (position == mMotorLimits.getLowerLimit()) {
             return MotorPositionLimitStates.AT_LOWER_LIMIT;
-        }else if (position == mMotorLimits.getUpperLimit()) {
+        } else if (position == mMotorLimits.getUpperLimit()) {
             return MotorPositionLimitStates.AT_UPPER_LIMIT;
-        }else {
+        } else {
             return MotorPositionLimitStates.IN_RANGE;
         }
     }

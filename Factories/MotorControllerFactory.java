@@ -15,32 +15,24 @@ import SOTAlib.Encoder.SOTADutyCycleEncoder;
 import SOTAlib.Encoder.SOTA_Encoder;
 import SOTAlib.MotorController.SOTA_FalconFX;
 import SOTAlib.MotorController.MotorPositionLimits;
+import SOTAlib.MotorController.NullConfigException;
 import SOTAlib.MotorController.SOTA_MotorController;
 import SOTAlib.MotorController.SOTA_SparkMax;
 import SOTAlib.MotorController.SOTA_TalonSRX;
 public class MotorControllerFactory {
 
-    public static SOTA_MotorController generateMotorController(MotorControllerConfig config) throws IllegalMotorModel{
+    public static SOTA_MotorController generateMotorController(MotorControllerConfig config) throws IllegalMotorModel, NullConfigException{
         switch (config.getMotorModel()) {
             case "Falcon":
-                return generateFalconDelegate(config);
+                return new SOTA_FalconFX(config);
             case "SparkMax":
-                return generateSparkDelegate(config);
+                return new SOTA_SparkMax(config);
             case "Talon":
-                return generateTalon(config);
+                return new SOTA_TalonSRX(config);
         }
         throw new  IllegalMotorModel("Illegal Motor Model, check config has valid motor types 'Falcon', 'SparkMax', or 'Talon'");
     }
     
-    public static SOTA_MotorController generateFalconDelegate(MotorControllerConfig config){
-        if(config == null) return null;
-        WPI_TalonFX motor = new WPI_TalonFX(config.getPort());        
-        SOTA_Encoder encoder =  generateEncoder(config.getEncoderConfig());
-        MotorPositionLimits limits = generateLimits(config.getMotorLimitsConfig());
-
-        return new SOTA_FalconFX(motor, encoder, limits, config);
-    }
-
     public static SOTA_MotorController generateSparkDelegate(MotorControllerConfig config) {
         if(config == null) {
             return null; //TODO: throw null exception

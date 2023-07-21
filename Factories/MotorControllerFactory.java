@@ -33,28 +33,6 @@ public class MotorControllerFactory {
         throw new  IllegalMotorModel("Illegal Motor Model, check config has valid motor types 'Falcon', 'SparkMax', or 'Talon'");
     }
     
-    public static SOTA_MotorController generateSparkDelegate(MotorControllerConfig config) {
-        if(config == null) {
-            return null; //TODO: throw null exception
-        }
-        MotorType motorType;
-        switch(config.getMotorType()) {
-            case("BRUSHLESS"):
-                motorType = MotorType.kBrushless;
-                break;
-            case("BRUSHED"):
-                motorType = MotorType.kBrushed;
-                break;
-            default:
-                throw new IllegalArgumentException("Illegal motor type");
-        }
-        CANSparkMax sparkMax = new CANSparkMax(config.getPort(), motorType);
-        SOTA_Encoder encoder = generateEncoder(config.getEncoderConfig());
-        MotorPositionLimits limits = generateLimits(config.getMotorLimitsConfig());
-        sparkMax.setInverted(config.getIsInverted());
-        return new SOTA_SparkMax(sparkMax, encoder, limits, config);
-    }
-
     public static SOTA_MotorController generateTalon(MotorControllerConfig config){
         WPI_TalonSRX motor = new WPI_TalonSRX(config.getPort());
         motor.setInverted(config.getIsInverted());

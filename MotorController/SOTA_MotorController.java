@@ -15,8 +15,9 @@ public interface SOTA_MotorController extends MotorController {
      * example: SOTA_MotorController.getEncoder().getAbsolutePosition()
      * 
      * @return SOTA_Encoder object
+     * @throws NullConfigException
      */
-    SOTA_Encoder getEncoder();
+    SOTA_Encoder getEncoder() throws NullConfigException;
 
     /**
      * @return encoder velocity in RPM
@@ -123,8 +124,9 @@ public interface SOTA_MotorController extends MotorController {
 
     /**
      * Resets the encoder to 0
+     * @throws NullConfigException
      */
-    void resetEncoder();
+    void resetEncoder() throws NullConfigException;
 
     /**
      * 

@@ -1,5 +1,7 @@
 package SOTAlib.MotorController;
 
+import java.util.Optional;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import SOTAlib.MotorController.NullConfigException;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
@@ -12,9 +14,9 @@ import SOTAlib.Factories.EncoderFactory;
 public class SOTA_FalconFX implements SOTA_MotorController {
     private double kNativeCountsPerRevolution = 2048;
     private final WPI_TalonFX mMotor;
-    private final SOTA_Encoder mEncoder;
+    private Optional<SOTA_Encoder> mEncoder;
+    // private final SOTA_Encoder mEncoder;
     private MotorPositionLimits mMotorLimits;
-
 
     public SOTA_FalconFX(MotorControllerConfig config) throws NullConfigException {
         if (config == null)
@@ -47,7 +49,7 @@ public class SOTA_FalconFX implements SOTA_MotorController {
 
         try {
             SOTA_Encoder encoder = EncoderFactory.generateEncoder(config.getEncoderConfig());
-            this.mEncoder = encoder;
+            this.mEncoder = Optional.ofNullable(encoder);
         }catch (Exception e) {
             throw new RuntimeException("Failed to generate Encoder", e); //TODO: make work
         }
@@ -91,23 +93,23 @@ public class SOTA_FalconFX implements SOTA_MotorController {
 
     }
 
-    public SOTA_Encoder getEncoder() {
-        return mEncoder;
+    public SOTA_Encoder getEncoder() throws NullConfigException {
+        return mEncoder.orElseThrow(NullConfigException::nullEncoder);
     }
 
     public double getEncoderVelocity() {
-        if (mEncoder == null) {
+        if (mEncoder.isEmpty()) {
             return getIntegratedEncoderVelocity();
         } else {
-            return mEncoder.getVelocity();
+            return mEncoder.get().getVelocity();
         }
     }
 
     public double getEncoderPosition() {
-        if (mEncoder == null) {
+        if (mEncoder.isEmpty()) {
             return getIntegratedEncoderPosition();
         } else {
-            return mEncoder.get();
+            return mEncoder.get().get();
         }
     }
 
@@ -207,8 +209,8 @@ public class SOTA_FalconFX implements SOTA_MotorController {
     }
 
     @Override
-    public void resetEncoder() {
-        mEncoder.reset();
+    public void resetEncoder() throws NullConfigException{
+        mEncoder.orElseThrow(NullConfigException::nullEncoder).reset();
     }
 
     @Override

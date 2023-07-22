@@ -7,13 +7,14 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import SOTAlib.Config.MotorControllerConfig;
 import SOTAlib.Encoder.SOTA_Encoder;
+import SOTAlib.Factories.EncoderFactory;
 
 public class SOTA_TalonSRX implements SOTA_MotorController {
 
     private WPI_TalonSRX mMotor;
-    private SOTA_Encoder mEncoder;
+    private SOTA_Encoder mEncoder; // TODO: make optional
     private double kNativeCountsPerRevolution = 0;
-    private MotorPositionLimits mMotorLimits;
+    private MotorPositionLimits mMotorLimits; // TODO: make optional
 
     public SOTA_TalonSRX(WPI_TalonSRX motor) {
         this.mMotor = motor;
@@ -36,6 +37,44 @@ public class SOTA_TalonSRX implements SOTA_MotorController {
         }
         if (config.getCurrentLimit() != 0.0) {
             setCurrentLimit(config.getCurrentLimit());
+        }
+    }
+
+    public SOTA_TalonSRX(MotorControllerConfig config) throws NullConfigException {
+        if (config == null)
+            throw new NullConfigException("SOTA_TalonSRX: No config");
+
+        this.mMotor = new WPI_TalonSRX(config.getPort());
+        mMotor.setInverted(config.getIsInverted());
+
+        switch (config.getNeutralOperation()) {
+            case "BRAKE":
+                mMotor.setNeutralMode(NeutralMode.Brake);
+            case "COAST":
+                mMotor.setNeutralMode(NeutralMode.Coast);
+        }
+
+        if (config.getCurrentLimit() != 0) {
+            mMotor.configPeakCurrentLimit(config.getCurrentLimit());
+        } else {
+            System.out.println("SOTA_FalconFX: INFO: no current limit");
+        }
+
+        try {
+            MotorPositionLimits limits = new MotorPositionLimits(config.getMotorLimitsConfig().getLowerLimit(),
+                    config.getMotorLimitsConfig().getUpperLimit(), config.getMotorLimitsConfig().getFinalLimits());
+            this.mMotorLimits = limits;
+        } catch (NullPointerException e) {
+            System.out.println("SOTA_FalconFX: INFO: no motor limits");
+        }
+
+        this.kNativeCountsPerRevolution = config.getCountsPerRevolution();
+        try {
+            SOTA_Encoder encoder = EncoderFactory.generateEncoder(config.getEncoderConfig());
+            // this.mEncoder = Optional.ofNullable(encoder);
+            this.mEncoder = encoder;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to generate Encoder", e); // TODO: make work
         }
     }
 

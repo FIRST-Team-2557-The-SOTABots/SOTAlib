@@ -6,13 +6,12 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import SOTAlib.Config.MotorControllerConfig;
 import SOTAlib.Encoder.SOTA_Encoder;
-import SOTAlib.Encoder.SparkMaxIntegratedEncoder;
 import SOTAlib.Factories.EncoderFactory;
 
 public class SOTA_SparkMax implements SOTA_MotorController {
     private final CANSparkMax mMotor;
     private final SOTA_Encoder mEncoder; // TODO: make into an optional
-    private MotorPositionLimits mMotorLimits;
+    private MotorPositionLimits mMotorLimits; // TODO: make into an optional
 
     public SOTA_SparkMax(MotorControllerConfig config) throws NullConfigException {
         if (config == null) {
@@ -232,7 +231,7 @@ public class SOTA_SparkMax implements SOTA_MotorController {
             case kCoast:
                 return NeutralOperation.kCoast;
             default:
-                throw new NullNeutralOperationException("SOTA_SparkMax no idle mode returned by SparkMax");
+                throw new NullNeutralOperationException("SOTA_SparkMax: no idle mode returned by SparkMax");
         }
     }
 }

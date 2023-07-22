@@ -3,7 +3,6 @@ package SOTAlib.MotorController;
 import java.util.Optional;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import SOTAlib.MotorController.NullConfigException;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -15,8 +14,7 @@ public class SOTA_FalconFX implements SOTA_MotorController {
     private double kNativeCountsPerRevolution = 2048;
     private final WPI_TalonFX mMotor;
     private Optional<SOTA_Encoder> mEncoder;
-    // private final SOTA_Encoder mEncoder;
-    private MotorPositionLimits mMotorLimits;
+    private MotorPositionLimits mMotorLimits; // TODO: make optional
 
     public SOTA_FalconFX(MotorControllerConfig config) throws NullConfigException {
         if (config == null)
@@ -30,7 +28,6 @@ public class SOTA_FalconFX implements SOTA_MotorController {
                 mMotor.setNeutralMode(NeutralMode.Coast);
         }
 
-        System.out.println("SOTA_FalconFX: Current Limit: " + config.getCurrentLimit());
         if (config.getCurrentLimit() != 0) {
             StatorCurrentLimitConfiguration currentConfig = new StatorCurrentLimitConfiguration(true,
                     config.getCurrentLimit(), config.getCurrentLimit(), 1.0);
@@ -50,8 +47,8 @@ public class SOTA_FalconFX implements SOTA_MotorController {
         try {
             SOTA_Encoder encoder = EncoderFactory.generateEncoder(config.getEncoderConfig());
             this.mEncoder = Optional.ofNullable(encoder);
-        }catch (Exception e) {
-            throw new RuntimeException("Failed to generate Encoder", e); //TODO: make work
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to generate Encoder", e); // TODO: make work
         }
     }
 
@@ -209,7 +206,7 @@ public class SOTA_FalconFX implements SOTA_MotorController {
     }
 
     @Override
-    public void resetEncoder() throws NullConfigException{
+    public void resetEncoder() throws NullConfigException {
         mEncoder.orElseThrow(NullConfigException::nullEncoder).reset();
     }
 

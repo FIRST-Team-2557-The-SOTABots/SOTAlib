@@ -12,33 +12,8 @@ import SOTAlib.Factories.EncoderFactory;
 public class SOTA_TalonSRX implements SOTA_MotorController {
 
     private WPI_TalonSRX mMotor;
-    private SOTA_Encoder mEncoder; // TODO: make optional
     private double kNativeCountsPerRevolution = 0;
     private MotorPositionLimits mMotorLimits; // TODO: make optional
-
-    public SOTA_TalonSRX(WPI_TalonSRX motor) {
-        this.mMotor = motor;
-    }
-
-    public SOTA_TalonSRX(WPI_TalonSRX motor, SOTA_Encoder encoder, MotorPositionLimits limits,
-            MotorControllerConfig config) {
-        this.mMotor = motor;
-        this.mEncoder = encoder;
-        this.mMotorLimits = limits;
-        this.kNativeCountsPerRevolution = config.getCountsPerRevolution();
-        setInverted(config.getIsInverted()); // TODO: move to factory
-        switch (config.getNeutralOperation()) {
-            case "BRAKE":
-                setNeutralOperation(NeutralOperation.kBrake);
-                break;
-            case "COAST":
-                setNeutralOperation(NeutralOperation.kCoast);
-                break;
-        }
-        if (config.getCurrentLimit() != 0.0) {
-            setCurrentLimit(config.getCurrentLimit());
-        }
-    }
 
     public SOTA_TalonSRX(MotorControllerConfig config) throws NullConfigException {
         if (config == null)
@@ -69,13 +44,6 @@ public class SOTA_TalonSRX implements SOTA_MotorController {
         }
 
         this.kNativeCountsPerRevolution = config.getCountsPerRevolution();
-        try {
-            SOTA_Encoder encoder = EncoderFactory.generateEncoder(config.getEncoderConfig());
-            // this.mEncoder = Optional.ofNullable(encoder);
-            this.mEncoder = encoder;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to generate Encoder", e); // TODO: make work
-        }
     }
 
     @Override
@@ -120,42 +88,12 @@ public class SOTA_TalonSRX implements SOTA_MotorController {
         }
     }
 
-    @Override
-    public SOTA_Encoder getEncoder() {
-        return mEncoder;
-    }
-
-    @Override
     public double getEncoderVelocity() {
-        if (mEncoder == null) {
-            return getIntegratedEncoderVelocity();
-        } else {
-            return mEncoder.getVelocity();
-        }
-    }
-
-    @Override
-    public double getEncoderPosition() {
-        if (mEncoder == null) {
-            return getIntegratedEncoderPosition();
-        } else {
-            return mEncoder.get();
-        }
-    }
-
-    @Override
-    public double getIntegratedEncoderVelocity() {
         return nativeVelocityToRPM(mMotor.getSelectedSensorVelocity());
     }
 
-    @Override
-    public double getIntegratedEncoderPosition() {
+    public double getEncoderPosition() {
         return nativePositionToRotations(mMotor.getSelectedSensorPosition());
-    }
-
-    @Override
-    public void resetIntegratedEncoder() {
-        mMotor.setSelectedSensorPosition(0.0);
     }
 
     @Override
@@ -237,9 +175,8 @@ public class SOTA_TalonSRX implements SOTA_MotorController {
         }
     }
 
-    @Override
     public void resetEncoder() {
-        mEncoder.reset();
+        mMotor.setSelectedSensorPosition(0.0);
     }
 
     @Override

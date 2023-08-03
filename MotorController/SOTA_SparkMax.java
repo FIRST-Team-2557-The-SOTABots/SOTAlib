@@ -5,12 +5,9 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import SOTAlib.Config.MotorControllerConfig;
-import SOTAlib.Encoder.SOTA_Encoder;
-import SOTAlib.Factories.EncoderFactory;
 
 public class SOTA_SparkMax implements SOTA_MotorController {
     private final CANSparkMax mMotor;
-    private final SOTA_Encoder mEncoder; // TODO: make into an optional
     private MotorPositionLimits mMotorLimits; // TODO: make into an optional
 
     public SOTA_SparkMax(MotorControllerConfig config) throws NullConfigException {
@@ -50,14 +47,6 @@ public class SOTA_SparkMax implements SOTA_MotorController {
             this.mMotorLimits = limits;
         } catch (NullPointerException e) {
             System.out.println("SOTA_FalconFX: INFO: no motor limits");
-        }
-
-        try {
-            SOTA_Encoder encoder = EncoderFactory.generateEncoder(config.getEncoderConfig());
-            // this.mEncoder = Optional.ofNullable(encoder);
-            this.mEncoder = encoder;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to generate Encoder", e); // TODO: make work
         }
     }
 
@@ -112,32 +101,12 @@ public class SOTA_SparkMax implements SOTA_MotorController {
         }
     }
 
-    public SOTA_Encoder getEncoder() {
-        return mEncoder;
-    }
-
     public double getEncoderVelocity() {
-        if (mEncoder == null)
-            return getIntegratedEncoderVelocity();
-        return mEncoder.getVelocity();
-    }
-
-    public double getEncoderPosition() {
-        if (mEncoder == null)
-            return getIntegratedEncoderPosition();
-        return mEncoder.get();
-    }
-
-    public double getIntegratedEncoderVelocity() {
         return mMotor.getEncoder().getVelocity();
     }
 
-    public double getIntegratedEncoderPosition() {
+    public double getEncoderPosition() {
         return mMotor.getEncoder().getPosition();
-    }
-
-    public void resetNativeEncoder() {
-        mMotor.getEncoder().setPosition(0.0);
     }
 
     public double getMotorCurrent() {
@@ -167,11 +136,6 @@ public class SOTA_SparkMax implements SOTA_MotorController {
     public void stopMotor() {
         mMotor.stopMotor();
 
-    }
-
-    @Override
-    public void resetIntegratedEncoder() {
-        mMotor.getEncoder().setPosition(0);
     }
 
     @Override
@@ -220,7 +184,7 @@ public class SOTA_SparkMax implements SOTA_MotorController {
 
     @Override
     public void resetEncoder() {
-        mEncoder.reset();
+        mMotor.getEncoder().setPosition(0);
     }
 
     @Override

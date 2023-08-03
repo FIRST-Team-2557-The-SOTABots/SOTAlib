@@ -11,15 +11,6 @@ public interface SOTA_MotorController extends MotorController {
     void setNeutralOperation(NeutralOperation neutralOperation);
 
     /**
-     * Returns whole encoder object to access methods from it
-     * example: SOTA_MotorController.getEncoder().getAbsolutePosition()
-     * 
-     * @return SOTA_Encoder object
-     * @throws NullConfigException
-     */
-    SOTA_Encoder getEncoder() throws NullConfigException;
-
-    /**
      * @return encoder velocity in RPM
      */
     double getEncoderVelocity();
@@ -28,28 +19,6 @@ public interface SOTA_MotorController extends MotorController {
      * @return encoder position in rotations
      */
     double getEncoderPosition();
-
-    /**
-     * This method accesses the encoder built in to the motor, not the composite
-     * SOTA_MotorController SOTA_Encoder combo
-     * 
-     * @return integrated encoder velocity in RPM
-     */
-    double getIntegratedEncoderVelocity();
-
-    /**
-     * This method accesses the encoder built in to the motor, not the composite
-     * SOTA_MotorController SOTA_Encoder combo
-     * 
-     * @return integrated encoder position in Rotations
-     */
-    double getIntegratedEncoderPosition();
-
-    /**
-     * Resets position of integrated encoder, not the composite SOTA_MotorController
-     * SOTA_Encoder combo
-     */
-    void resetIntegratedEncoder();
 
     /**
      * 
@@ -124,6 +93,7 @@ public interface SOTA_MotorController extends MotorController {
 
     /**
      * Resets the encoder to 0
+     * 
      * @throws NullConfigException
      */
     void resetEncoder() throws NullConfigException;

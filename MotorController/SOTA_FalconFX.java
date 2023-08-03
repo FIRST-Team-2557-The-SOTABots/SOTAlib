@@ -1,19 +1,14 @@
 package SOTAlib.MotorController;
 
-import java.util.Optional;
-
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import SOTAlib.Config.MotorControllerConfig;
-import SOTAlib.Encoder.SOTA_Encoder;
-import SOTAlib.Factories.EncoderFactory;
 
 public class SOTA_FalconFX implements SOTA_MotorController {
     private double kNativeCountsPerRevolution = 2048;
     private final WPI_TalonFX mMotor;
-    private Optional<SOTA_Encoder> mEncoder;
     private MotorPositionLimits mMotorLimits; // TODO: make optional
 
     public SOTA_FalconFX(MotorControllerConfig config) throws NullConfigException {
@@ -44,12 +39,6 @@ public class SOTA_FalconFX implements SOTA_MotorController {
             System.out.println("SOTA_FalconFX: INFO: no motor limits");
         }
 
-        try {
-            SOTA_Encoder encoder = EncoderFactory.generateEncoder(config.getEncoderConfig());
-            this.mEncoder = Optional.ofNullable(encoder);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to generate Encoder", e); // TODO: make work
-        }
     }
 
     public void set(double speed) {
@@ -90,36 +79,12 @@ public class SOTA_FalconFX implements SOTA_MotorController {
 
     }
 
-    public SOTA_Encoder getEncoder() throws NullConfigException {
-        return mEncoder.orElseThrow(NullConfigException::nullEncoder);
-    }
-
     public double getEncoderVelocity() {
-        if (mEncoder.isEmpty()) {
-            return getIntegratedEncoderVelocity();
-        } else {
-            return mEncoder.get().getVelocity();
-        }
-    }
-
-    public double getEncoderPosition() {
-        if (mEncoder.isEmpty()) {
-            return getIntegratedEncoderPosition();
-        } else {
-            return mEncoder.get().get();
-        }
-    }
-
-    public double getIntegratedEncoderVelocity() {
         return nativeVelocityToRPM(mMotor.getSelectedSensorVelocity());
     }
 
-    public double getIntegratedEncoderPosition() {
+    public double getEncoderPosition() {
         return nativePositionToRotations(mMotor.getSelectedSensorPosition());
-    }
-
-    public void resetIntegratedEncoder() {
-        mMotor.setSelectedSensorPosition(0.0);
     }
 
     public double getMotorTemperature() {
@@ -206,8 +171,8 @@ public class SOTA_FalconFX implements SOTA_MotorController {
     }
 
     @Override
-    public void resetEncoder() throws NullConfigException {
-        mEncoder.orElseThrow(NullConfigException::nullEncoder).reset();
+    public void resetEncoder() {
+        mMotor.setSelectedSensorPosition(0.0);
     }
 
     @Override

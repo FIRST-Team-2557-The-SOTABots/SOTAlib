@@ -6,7 +6,6 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import SOTAlib.Config.MotorControllerConfig;
-import SOTAlib.Encoder.SOTA_Encoder;
 import SOTAlib.Factories.EncoderFactory;
 
 public class SOTA_TalonSRX implements SOTA_MotorController {

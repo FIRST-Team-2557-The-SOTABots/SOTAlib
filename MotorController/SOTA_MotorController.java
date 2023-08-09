@@ -1,7 +1,6 @@
 package SOTAlib.MotorController;
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
-import SOTAlib.Encoder.SOTA_Encoder;
 
 public interface SOTA_MotorController extends MotorController {
 

@@ -22,18 +22,11 @@ public interface SOTA_AbsoulteEncoder {
     public double getPositionNoOffset();
 
     /**
-     * Gets the velocity of the encoder in RPM
-     * 
-     * @return velocity in RPM
-     */
-    public double getVelocity();
-
-    /**
      * Sets the offset of the encoder
      * 
      * @param offset encoder reading at desired zero point
      */
-    public double setPositionOffset(double offset);
+    public void setPositionOffset(double offset);
 
     /**
      * Gets the offset of the encoder

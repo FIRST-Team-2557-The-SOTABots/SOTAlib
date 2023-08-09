@@ -10,9 +10,6 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import SOTAlib.Config.EncoderConfig;
 import SOTAlib.Config.MotorControllerConfig;
 import SOTAlib.Config.MotorLimitsConfig;
-import SOTAlib.Encoder.AnalogInputEncoder;
-import SOTAlib.Encoder.SOTADutyCycleEncoder;
-import SOTAlib.Encoder.SOTA_Encoder;
 import SOTAlib.MotorController.SOTA_FalconFX;
 import SOTAlib.MotorController.MotorPositionLimits;
 import SOTAlib.MotorController.NullConfigException;
@@ -47,24 +44,23 @@ public class MotorControllerFactory {
 
     // public static MotorPositionLimits generateLimits(MotorLimitsConfig config){
     // if(config == null) return null;//TODO: throw null exception
-    // return new MotorPositionLimits(config.getLowerLimit(),
-    // config.getUpperLimit(), config.getFinalLimits());
+    // return new MotorPositionLimits(config.getLowerLimit(), // config.getUpperLimit(), config.getFinalLimits());
 
     // }
 
-    public static SOTA_Encoder generateEncoder(EncoderConfig encoderConfig) {
-        if (encoderConfig == null) {
-            return null;// TODO: throw null exception
-        }
-        switch (encoderConfig.getEncoderType()) {
-            case "ANALOG":
-                AnalogInput analogInput = new AnalogInput(encoderConfig.getPort());
-                return new AnalogInputEncoder(analogInput, encoderConfig);
-            case "DUTYCYCLE":
-                DutyCycleEncoder dutyCycle = new DutyCycleEncoder(encoderConfig.getPort());
-                return new SOTADutyCycleEncoder(dutyCycle, encoderConfig);
-            default:
-                throw new IllegalArgumentException("Illegal Encoder Type");
-        }
-    }
+    // public static SOTA_Encoder generateEncoder(EncoderConfig encoderConfig) {
+    //     if (encoderConfig == null) {
+    //         return null;// TODO: throw null exception
+    //     }
+    //     switch (encoderConfig.getEncoderType()) {
+    //         case "ANALOG":
+    //             AnalogInput analogInput = new AnalogInput(encoderConfig.getPort());
+    //             return new AnalogInputEncoder(analogInput, encoderConfig);
+    //         case "DUTYCYCLE":
+    //             DutyCycleEncoder dutyCycle = new DutyCycleEncoder(encoderConfig.getPort());
+    //             return new SOTADutyCycleEncoder(dutyCycle, encoderConfig);
+    //         default:
+    //             throw new IllegalArgumentException("Illegal Encoder Type");
+    //     }
+    // }
 }

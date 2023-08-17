@@ -20,7 +20,7 @@ public interface SOTA_AbsoulteEncoder {
      */
     public default double getConstrainedPositon() {
         Double input = getPosition();
-        return Math.abs(input = Math.floor(input));
+        return Math.abs(input - Math.floor(input));
     };
 
     /**

@@ -15,6 +15,15 @@ public interface SOTA_AbsoulteEncoder {
     public double getPosition();
 
     /**
+     * GetPosition but constrained to an output between 0 and 1
+     * @return encoder position constrained to between 0 and 1, rotations
+     */
+    public default double getConstrainedPositon() {
+        Double input = getPosition();
+        return Math.abs(input = Math.floor(input));
+    };
+
+    /**
      * Gets the position of the encoder without offset
      * 
      * @return position of encoder in rotations

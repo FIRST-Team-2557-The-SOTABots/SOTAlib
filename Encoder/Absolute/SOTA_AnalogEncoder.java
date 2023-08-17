@@ -31,11 +31,16 @@ public class SOTA_AnalogEncoder implements SOTA_AbsoulteEncoder {
 
     @Override
     public void setPositionOffset(double offset) {
-       mEncoder.setPositionOffset(offset); 
+        mEncoder.setPositionOffset(offset);
     }
 
     @Override
     public double getPositionOffset() {
         return mEncoder.getPositionOffset();
+    }
+
+    @Override
+    public int getPort() {
+        return mEncoder.getChannel();
     }
 }

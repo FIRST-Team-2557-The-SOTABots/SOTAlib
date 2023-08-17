@@ -38,4 +38,9 @@ public class SOTA_DutyCycle implements SOTA_AbsoulteEncoder {
     public double getPositionOffset() {
         return mEncoder.getPositionOffset();
     }
+
+    @Override
+    public int getPort() {
+        return mEncoder.getSourceChannel();
+    }
 }

@@ -20,7 +20,7 @@ public interface SOTA_AbsoulteEncoder {
      */
     public default double getConstrainedPositon() {
         Double input = getPosition();
-        return Math.abs(input - Math.floor(input));
+        return Math.abs(input) - Math.floor(Math.abs(input));
     };
 
     /**
@@ -43,4 +43,10 @@ public interface SOTA_AbsoulteEncoder {
      * @return offset of the encoder
      */
     public double getPositionOffset();
+
+    /**
+     * Gets port of encoder
+     * @return port Number
+     */
+    public int getPort();
 }

@@ -10,7 +10,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
-public interface SwerveDriveInterface extends Subsystem{
+public interface ShiftingSwerveDriveInterface extends Subsystem{
     
     default void drive(double fwd, double str, double rot){
         drive(fwd, str, rot, getCurrentAngle());

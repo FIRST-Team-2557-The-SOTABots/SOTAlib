@@ -2,15 +2,15 @@ package SOTAlib.Config;
 
 
 public class MotorControllerConfig  {
-    private int port;
+    private int port; //required
     private boolean isInverted;
-    private String motorModel;
-    private String motorType;
-    private int countsPerRevolution;
-    private String neutralOperation;
-    private EncoderConfig encoderConfig;
-    private MotorLimitsConfig motorLimitsConfig;
-    private int currentLimit;
+    private String motorModel; //Motor Cotroller Model, SparkMax, Talon, Falcon, etc.
+    private String motorType; //needed for sparkmax, Brushed or brushless
+    private int countsPerRevolution; //needed for Talon becuase it can have many different encoders
+    private String neutralOperation; //required brake or coast
+    private EncoderConfig encoderConfig; //optional 
+    private MotorLimitsConfig motorLimitsConfig; //optional
+    private int currentLimit; //optional
 
     public boolean getIsInverted() {
         return isInverted;

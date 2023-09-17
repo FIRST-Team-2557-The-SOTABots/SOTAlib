@@ -4,7 +4,11 @@
 
 package SOTAlib.MotorController;
 
-/** Add your docs here. */
+/**
+ * Defines Neutral Operation states
+ * kBrake is Brake
+ * kCoast is Coast
+ */
 public enum NeutralOperation {
     kBrake,
     kCoast

@@ -1,26 +1,21 @@
 package SOTAlib.MotorController;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import SOTAlib.Config.MotorControllerConfig;
-import SOTAlib.Factories.EncoderFactory;
 
-public class SOTA_TalonSRX implements SOTA_MotorController {
-
-    private WPI_TalonSRX mMotor;
-    private double kNativeCountsPerRevolution = 0;
+public class SOTA_FalconFX implements SOTA_MotorController {
+    private double kNativeCountsPerRevolution = 2048;
+    private final WPI_TalonFX mMotor;
     private MotorPositionLimits mMotorLimits; // TODO: make optional
 
-    public SOTA_TalonSRX(MotorControllerConfig config) throws NullConfigException {
+    public SOTA_FalconFX(MotorControllerConfig config) throws NullConfigException {
         if (config == null)
-            throw new NullConfigException("SOTA_TalonSRX: No config");
-
-        this.mMotor = new WPI_TalonSRX(config.getPort());
+            throw new NullConfigException("SOTA_FalconFX: config not created");
+        this.mMotor = new WPI_TalonFX(config.getPort());
         mMotor.setInverted(config.getIsInverted());
-
         switch (config.getNeutralOperation()) {
             case "BRAKE":
                 mMotor.setNeutralMode(NeutralMode.Brake);
@@ -29,7 +24,9 @@ public class SOTA_TalonSRX implements SOTA_MotorController {
         }
 
         if (config.getCurrentLimit() != 0) {
-            mMotor.configPeakCurrentLimit(config.getCurrentLimit());
+            StatorCurrentLimitConfiguration currentConfig = new StatorCurrentLimitConfiguration(true,
+                    config.getCurrentLimit(), config.getCurrentLimit(), 1.0);
+            mMotor.configStatorCurrentLimit(currentConfig);
         } else {
             System.out.println("SOTA_FalconFX: INFO: no current limit");
         }
@@ -42,42 +39,36 @@ public class SOTA_TalonSRX implements SOTA_MotorController {
             System.out.println("SOTA_FalconFX: INFO: no motor limits");
         }
 
-        this.kNativeCountsPerRevolution = config.getCountsPerRevolution();
     }
 
-    @Override
     public void set(double speed) {
-        mMotor.set(ControlMode.PercentOutput, speed);
+        if (mMotorLimits != null) {
+            if (speed < 0) {
+                if (mMotorLimits.getLowerLimit() > getEncoderPosition())
+                    speed = 0;
+            } else if (speed > 0) {
+                if (mMotorLimits.getUpperLimit() < getEncoderPosition())
+                    speed = 0;
+            }
+
+        }
+        mMotor.set(TalonFXControlMode.PercentOutput, speed);
     }
 
-    @Override
     public double get() {
-        return mMotor.get();
+        return mMotor.getMotorOutputPercent();
     }
 
-    @Override
-    public void disable() {
-        mMotor.disable();
-    }
-
-    @Override
-    public void stopMotor() {
-        mMotor.disable();
-    }
-
-    @Override
     public void setInverted(boolean isInverted) {
         mMotor.setInverted(isInverted);
     }
 
-    @Override
     public boolean getInverted() {
         return mMotor.getInverted();
     }
 
-    @Override
     public void setNeutralOperation(NeutralOperation neutralOperation) {
-        switch (neutralOperation) { // TODO: test this
+        switch (neutralOperation) {
             case kBrake:
                 mMotor.setNeutralMode(NeutralMode.Brake);
                 break;
@@ -85,6 +76,7 @@ public class SOTA_TalonSRX implements SOTA_MotorController {
                 mMotor.setNeutralMode(NeutralMode.Coast);
                 break;
         }
+
     }
 
     public double getEncoderVelocity() {
@@ -95,26 +87,35 @@ public class SOTA_TalonSRX implements SOTA_MotorController {
         return nativePositionToRotations(mMotor.getSelectedSensorPosition());
     }
 
-    @Override
     public double getMotorTemperature() {
         return mMotor.getTemperature();
     }
 
-    @Override
     public double getMotorCurrent() {
         return mMotor.getStatorCurrent();
     }
 
-    @Override
+    // TODO: arbitrary number for current limits works for swerve but who knows what
+    // will happen
     public void setCurrentLimit(int amps) {
-        SupplyCurrentLimitConfiguration config = new SupplyCurrentLimitConfiguration(true, amps, amps, 1.0);
-        mMotor.configSupplyCurrentLimit(config); // TODO: test this
-
+        StatorCurrentLimitConfiguration config = new StatorCurrentLimitConfiguration(true, amps, amps, 1.0);
+        mMotor.configStatorCurrentLimit(config);
     }
 
-    @Override
+    public void setPositionLimits(MotorPositionLimits limits) {
+        mMotorLimits = limits;
+    }
+
     public MotorPositionLimits getLimits() {
         return mMotorLimits;
+    }
+
+    public void disable() {
+        mMotor.neutralOutput();
+    }
+
+    public void stopMotor() {
+        mMotor.neutralOutput();
     }
 
     private double nativeVelocityToRPM(double ticks) {
@@ -123,11 +124,6 @@ public class SOTA_TalonSRX implements SOTA_MotorController {
 
     private double nativePositionToRotations(double ticks) {
         return ticks / kNativeCountsPerRevolution;
-    }
-
-    @Override
-    public void setPositionLimits(MotorPositionLimits limits) {
-        this.mMotorLimits = limits;
     }
 
     @Override
@@ -174,6 +170,7 @@ public class SOTA_TalonSRX implements SOTA_MotorController {
         }
     }
 
+    @Override
     public void resetEncoder() {
         mMotor.setSelectedSensorPosition(0.0);
     }
@@ -181,7 +178,6 @@ public class SOTA_TalonSRX implements SOTA_MotorController {
     @Override
     public NeutralOperation getNeutralOperation() throws NullNeutralOperationException {
         throw new NullNeutralOperationException(
-                "SOTA_TalonSRX: Ctre didn't implement getting the Neutral Operation from the motor. If you really need to get the Neutral Operation keep track of it in a seperate variable or get build to use a different motor. If you actually get this error email me howardwalz@gmail.com, good luck! :)");
+                "SOTA_FalconFX: Ctre didn't implement getting the Neutral Operation from the motor. If you really need to get the Neutral Operation keep track of it in a seperate variable or get build to use a different motor. If you actually get this error email me howardwalz@gmail.com, good luck! :)");
     }
-
 }

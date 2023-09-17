@@ -2,7 +2,7 @@ package SOTAlib.Pneumatics;
 
 public interface GearShifter {
     int getGear();
-    void shift(int gear);
+    void shift(int gear); //Low gear 0, High Gear 1
     default void shiftUp(){
         shift(getGear() + 1);
     };

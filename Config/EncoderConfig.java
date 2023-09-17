@@ -4,32 +4,53 @@
 
 package SOTAlib.Config;
 
+import edu.wpi.first.wpilibj.CounterBase.EncodingType;
+
 /** Add your docs here. */
 public class EncoderConfig {
-    private int port;
-    private double encoderOffset;
-    private double countsPerRevolution;
-    private String portType;
-    private String encoderType;
+    private int port; // for analog and DutyCycle/PWM encoders
+    private int sourceA; // for Quadrature encoders only
+    private int sourceB; // for Quadrature encoders only
+    private Integer sourceI; // for Quadrature encoders only
+    private EncodingType encodingType; // for Quadrature encoders only
+    private boolean isInverted; //for Quadrature encoders only
+    private Double encoderOffset; // for analog and DutyCycle/pwm encoders
+    private int countsPerRevolution; // for Quadrature encoders only
+    private String encoderType; // "QUAD", "DUTYCYCLE", or "ANALOG"
 
     public int getPort() {
         return port;
     }
 
-    public double getCountsPerRevolution() {
+    public int getCountsPerRevolution() {
         return countsPerRevolution;
     }
 
-    public double getEncoderOffset() {
+    public Double getEncoderOffset() {
         return encoderOffset;
     }
-    
-    public String getPortType(){
-        return portType;
-    }
-    
+
     public String getEncoderType() {
         return encoderType;
     }
-    
+
+    public int getSourceA() {
+        return sourceA;
+    }
+
+    public int getSourceB() {
+        return sourceB;
+    }
+
+    public Integer getSourceI() {
+        return sourceI;
+    }
+
+    public boolean getIsInverted() {
+        return isInverted;
+    }
+
+    public EncodingType getEncodingType() {
+        return encodingType;
+    }
 }

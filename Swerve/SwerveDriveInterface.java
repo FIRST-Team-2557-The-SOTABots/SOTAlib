@@ -74,7 +74,7 @@ public interface SwerveDriveInterface extends Subsystem {
 
     /**
      * 
-     * @return Maximum angular velocity of the RobotChassis TODO: get units from Jon & Jonas
+     * @return Maximum angular velocity of the RobotChassis in Radians per second
      */
     public double getMaxAngularVelocity();
 

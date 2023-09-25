@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -25,10 +26,9 @@ public class MotorControllerFactory {
             throws IllegalMotorModel, NullConfigException {
         switch (config.getMotorModel()) {
             case "Falcon":
-                WPI_TalonFX falcon = new WPI_TalonFX(config.getPort());
-                return new SOTA_FalconFX(config, falcon);
+                return generateFalconDelegate(config);
             case "SparkMax":
-                return new SOTA_SparkMax(config);
+                return generateSparkMaxDelegate(config);
             case "Talon":
                 return new SOTA_TalonSRX(config);
         }
@@ -71,4 +71,45 @@ public class MotorControllerFactory {
         return new SOTA_FalconFX(config, falcon, limits);
     }
 
+    private static SOTA_MotorController generateSparkMaxDelegate(MotorControllerConfig config) throws NullConfigException {
+
+        MotorType motorType;
+        switch (config.getMotorType()) {
+            case ("BRUSHLESS"):
+                motorType = MotorType.kBrushless;
+                break;
+            case ("BRUSHED"):
+                motorType = MotorType.kBrushed;
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal motor type");
+        }
+
+        CANSparkMax mMotor;
+        mMotor = new CANSparkMax(config.getPort(), motorType);
+        mMotor.setInverted(config.getIsInverted());
+        switch (config.getNeutralOperation()) {
+            case "BRAKE":
+                mMotor.setIdleMode(IdleMode.kBrake);
+            case "COAST":
+                mMotor.setIdleMode(IdleMode.kCoast);
+        }
+
+        if (config.getCurrentLimit() != -1) {
+            mMotor.setSmartCurrentLimit(config.getCurrentLimit());
+        } else {
+            System.out.println("SOTA_SparkMax: INFO: No current limit set");
+        }
+
+        MotorPositionLimits limits;
+        try {
+            limits = new MotorPositionLimits(config.getMotorLimitsConfig().getLowerLimit(),
+                    config.getMotorLimitsConfig().getUpperLimit(), config.getMotorLimitsConfig().getFinalLimits());
+        } catch (NullPointerException e) {
+            System.out.println("SOTA_FalconFX: INFO: no motor limits");
+            return new SOTA_SparkMax(config, mMotor);
+        }
+
+        return new SOTA_SparkMax(config, mMotor, limits);
+    }
 }

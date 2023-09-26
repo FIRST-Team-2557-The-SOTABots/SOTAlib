@@ -2,6 +2,7 @@ package SOTAlib.Factories;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -112,4 +113,39 @@ public class MotorControllerFactory {
 
         return new SOTA_SparkMax(config, mMotor, limits);
     }
+
+    private static SOTA_TalonSRX generateTalonSRXDelegate (MotorControllerConfig config) {
+
+        if (config == null)
+            throw new NullConfigException("SOTA_TalonSRX: No config");
+        TalonSRX mMotor;
+        mMotor = new WPI_TalonSRX(config.getPort());
+        mMotor.setInverted(config.getIsInverted());
+
+        switch (config.getNeutralOperation()) {
+            case "BRAKE":
+                mMotor.setNeutralMode(NeutralMode.Brake);
+            case "COAST":
+                mMotor.setNeutralMode(NeutralMode.Coast);
+        }
+
+        if (config.getCurrentLimit() != 0) {
+            mMotor.configPeakCurrentLimit(config.getCurrentLimit());
+        } else {
+            System.out.println("SOTA_FalconFX: INFO: no current limit");
+        }
+
+        try {
+            MotorPositionLimits limits = new MotorPositionLimits(config.getMotorLimitsConfig().getLowerLimit(),
+                    config.getMotorLimitsConfig().getUpperLimit(), config.getMotorLimitsConfig().getFinalLimits());
+            MotorPositionLimits mMotorLimits = limits;
+        } catch (NullPointerException e) {
+            System.out.println("SOTA_FalconFX: INFO: no motor limits");
+        }
+
+        double kNativeCountsPerRevolution = config.getCountsPerRevolution();
+
+        return new SOTA_TalonSRX(config);
+    }
+
 }

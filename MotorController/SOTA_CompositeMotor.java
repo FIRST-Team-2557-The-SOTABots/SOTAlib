@@ -14,12 +14,14 @@ public interface SOTA_CompositeMotor {
     /**
      * 
      * @return SOTA_AbsoluteEncoder Object
+     * @throws NullConfigException
      */
-    public SOTA_AbsoulteEncoder getAbsEncoder();
+    public SOTA_AbsoulteEncoder getAbsEncoder() throws NullConfigException;
 
     /**
      * 
      * @return SOTA_RelativeEncoder Object
+     * @throws NullConfigException
      */
-    public SOTA_RelativeEncoder getRelEncoder();
+    public SOTA_RelativeEncoder getRelEncoder() throws NullConfigException;
 }

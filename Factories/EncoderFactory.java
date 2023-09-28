@@ -20,6 +20,7 @@ public class EncoderFactory {
         return generateQuadratureDelegate(config);
     }
 
+    //TODO: Make all of these consistent with the rest of the factories
     public static SOTA_AbsoulteEncoder generateAbsoluteEncoder(EncoderConfig config) throws Exception {
         if (config == null) {
             throw new NullConfigException("EncoderFacotry: Null Config");

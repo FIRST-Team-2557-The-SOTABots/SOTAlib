@@ -12,14 +12,12 @@ import SOTAlib.Encoder.Absolute.SOTA_DutyCycle;
 import SOTAlib.Encoder.Relative.QuadratureEncoder;
 import SOTAlib.Encoder.Relative.SOTA_RelativeEncoder;
 import SOTAlib.MotorController.NullConfigException;
+import edu.wpi.first.wpilibj.Encoder;
 
 /** Add your docs here. */
 public class EncoderFactory {
     public static SOTA_RelativeEncoder generateRelativeEncoder(EncoderConfig config) throws NullConfigException {
-        if (config == null) {
-            throw new NullConfigException("EncoderFactory: Null Config");
-        }
-        return new QuadratureEncoder(config);
+        return generateQuadratureDelegate(config);
     }
 
     public static SOTA_AbsoulteEncoder generateAbsoluteEncoder(EncoderConfig config) throws Exception {
@@ -37,5 +35,26 @@ public class EncoderFactory {
                 throw new Exception(
                         "EncoderFactory: generateAbsoluteEncoder invaild encoder type, only accepts 'DUTYCYCLE', 'ANALOG', and 'CANCODER'");
         }
+    }
+
+    private static QuadratureEncoder generateQuadratureDelegate(EncoderConfig config) throws NullConfigException {
+        if (config == null) {
+            throw new NullConfigException("EncoderFactory: Null Config");
+        }
+
+        Encoder encoder;
+        if (config.getEncodingType() != null) {
+            encoder = new Encoder(config.getSourceA(), config.getSourceB(), false, config.getEncodingType());
+        } else {
+            encoder = new Encoder(config.getSourceA(), config.getSourceB());
+        }
+
+        if (config.getSourceI() != null) {
+            encoder.setIndexSource(config.getSourceI());
+        }
+
+        if (config.getIsInverted())
+            encoder.setReverseDirection(true);
+        return new QuadratureEncoder(encoder, config.getCountsPerRevolution());
     }
 }

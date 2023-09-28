@@ -44,8 +44,9 @@ public interface SOTA_MotorController extends MotorController {
      * encoder range the motor is allowed to operate in
      * 
      * @return MotorLimits object
+     * @throws NullConfigException
      */
-    MotorPositionLimits getLimits();
+    MotorPositionLimits getLimits() throws NullConfigException;
 
     /**
      * Sets the upper and lower bound of the encoder range the motor is allowed to
@@ -59,36 +60,41 @@ public interface SOTA_MotorController extends MotorController {
      * 
      * @return the lower bound of the encoder range the motor is allowed to operate
      *         in
+     * @throws NullConfigException
      */
-    double getLowerLimit();
+    double getLowerLimit() throws NullConfigException;
 
     /**
      * 
      * @return the upper bound of the encoder range the motor is allowed to operate
      *         in
+     * @throws NullConfigException
      */
-    double getUpperLimit();
+    double getUpperLimit() throws NullConfigException;
 
     /**
      * 
      * @return if the encoder is at the upper limit defined from the MotorLimits
      *         object
+     * @throws NullConfigException
      */
-    boolean atUpperLimit();
+    boolean atUpperLimit() throws NullConfigException;
 
     /**
      * 
      * @return if the encoder is at the lower limit defined from the MotorLimits
      *         object
+     * @throws NullConfigException
      */
-    boolean atLowerLimit();
+    boolean atLowerLimit() throws NullConfigException;
 
     /**
      * 
      * @return State of the interaction between the Encoder Position and the Range
      *         of the Limits, see EncoderLimitStates Enum for more information
+     * @throws NullConfigException
      */
-    MotorPositionLimitStates getLimitState();
+    MotorPositionLimitStates getLimitState() throws NullConfigException;
 
     /**
      * Resets the encoder to 0

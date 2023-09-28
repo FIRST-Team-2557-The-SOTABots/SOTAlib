@@ -1,5 +1,8 @@
 package SOTAlib.MotorController;
 
+import java.util.Optional;
+import java.util.function.Supplier;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
@@ -12,37 +15,17 @@ public class SOTA_TalonSRX implements SOTA_MotorController {
 
     private WPI_TalonSRX mMotor;
     private double kNativeCountsPerRevolution = 0;
-    private MotorPositionLimits mMotorLimits; // TODO: make optional
+    private Optional<MotorPositionLimits> mMotorLimits;
+    private Supplier<NullConfigException> mExceptionSupplier;
 
-    public SOTA_TalonSRX(MotorControllerConfig config) throws NullConfigException {
-        if (config == null)
-            throw new NullConfigException("SOTA_TalonSRX: No config");
+    public SOTA_TalonSRX(WPI_TalonSRX motor, double countsPerRevolution) {
+        this(motor, null, countsPerRevolution);
+    }
 
-        this.mMotor = new WPI_TalonSRX(config.getPort());
-        mMotor.setInverted(config.getIsInverted());
-
-        switch (config.getNeutralOperation()) {
-            case "BRAKE":
-                mMotor.setNeutralMode(NeutralMode.Brake);
-            case "COAST":
-                mMotor.setNeutralMode(NeutralMode.Coast);
-        }
-
-        if (config.getCurrentLimit() != 0) {
-            mMotor.configPeakCurrentLimit(config.getCurrentLimit());
-        } else {
-            System.out.println("SOTA_FalconFX: INFO: no current limit");
-        }
-
-        try {
-            MotorPositionLimits limits = new MotorPositionLimits(config.getMotorLimitsConfig().getLowerLimit(),
-                    config.getMotorLimitsConfig().getUpperLimit(), config.getMotorLimitsConfig().getFinalLimits());
-            this.mMotorLimits = limits;
-        } catch (NullPointerException e) {
-            System.out.println("SOTA_FalconFX: INFO: no motor limits");
-        }
-
-        this.kNativeCountsPerRevolution = config.getCountsPerRevolution();
+    public SOTA_TalonSRX(WPI_TalonSRX motor, MotorPositionLimits limits, double countsPerRevolution) {
+        this.mMotor = motor;
+        this.kNativeCountsPerRevolution = countsPerRevolution;
+        this.mMotorLimits = Optional.ofNullable(limits);
     }
 
     @Override
@@ -114,7 +97,7 @@ public class SOTA_TalonSRX implements SOTA_MotorController {
 
     @Override
     public MotorPositionLimits getLimits() {
-        return mMotorLimits;
+        return mMotorLimits.orElseThrow();
     }
 
     private double nativeVelocityToRPM(double ticks) {
@@ -127,21 +110,21 @@ public class SOTA_TalonSRX implements SOTA_MotorController {
 
     @Override
     public void setPositionLimits(MotorPositionLimits limits) {
-        this.mMotorLimits = limits;
+        this.mMotorLimits = Optional.ofNullable(limits);
     }
 
     @Override
-    public double getLowerLimit() {
-        return mMotorLimits.getLowerLimit();
+    public double getLowerLimit() throws NullConfigException {
+        return mMotorLimits.orElseThrow(mExceptionSupplier).getLowerLimit();
     }
 
     @Override
-    public double getUpperLimit() {
-        return mMotorLimits.getUpperLimit();
+    public double getUpperLimit() throws NullConfigException {
+        return mMotorLimits.orElseThrow(mExceptionSupplier).getUpperLimit();
     }
 
     @Override
-    public boolean atUpperLimit() {
+    public boolean atUpperLimit() throws NullConfigException {
         if (getLimitState() == MotorPositionLimitStates.AT_UPPER_LIMIT) {
             return true;
         } else {
@@ -150,7 +133,7 @@ public class SOTA_TalonSRX implements SOTA_MotorController {
     }
 
     @Override
-    public boolean atLowerLimit() {
+    public boolean atLowerLimit() throws NullConfigException {
         if (getLimitState() == MotorPositionLimitStates.AT_LOWER_LIMIT) {
             return true;
         } else {
@@ -159,18 +142,22 @@ public class SOTA_TalonSRX implements SOTA_MotorController {
     }
 
     @Override
-    public MotorPositionLimitStates getLimitState() {
-        double position = getEncoderPosition();
-        if (position < mMotorLimits.getLowerLimit()) {
-            return MotorPositionLimitStates.TOO_LOW;
-        } else if (position > mMotorLimits.getUpperLimit()) {
-            return MotorPositionLimitStates.TOO_HIGH;
-        } else if (position == mMotorLimits.getLowerLimit()) {
-            return MotorPositionLimitStates.AT_LOWER_LIMIT;
-        } else if (position == mMotorLimits.getUpperLimit()) {
-            return MotorPositionLimitStates.AT_UPPER_LIMIT;
+    public MotorPositionLimitStates getLimitState() throws NullConfigException {
+        if (mMotorLimits.isPresent()) {
+            double position = getEncoderPosition();
+            if (position < mMotorLimits.get().getLowerLimit()) {
+                return MotorPositionLimitStates.TOO_LOW;
+            } else if (position > mMotorLimits.get().getUpperLimit()) {
+                return MotorPositionLimitStates.TOO_HIGH;
+            } else if (position == mMotorLimits.get().getLowerLimit()) {
+                return MotorPositionLimitStates.AT_LOWER_LIMIT;
+            } else if (position == mMotorLimits.get().getUpperLimit()) {
+                return MotorPositionLimitStates.AT_UPPER_LIMIT;
+            } else {
+                return MotorPositionLimitStates.IN_RANGE;
+            }
         } else {
-            return MotorPositionLimitStates.IN_RANGE;
+            throw new NullConfigException("SOTA_TalonSRX: no limits");
         }
     }
 

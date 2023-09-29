@@ -16,7 +16,7 @@ public class EncoderConfig {
     private boolean isInverted; //for Quadrature encoders only
     private Double encoderOffset; // for analog and DutyCycle/pwm encoders
     private int countsPerRevolution; // for Quadrature encoders only
-    private String encoderType; // "QUAD", "DUTYCYCLE", or "ANALOG"
+    private String encoderType; // "QUAD", "DUTYCYCLE", "SPARKMAX", or "ANALOG"
 
     public int getPort() {
         return port;

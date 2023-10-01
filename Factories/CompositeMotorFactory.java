@@ -21,17 +21,24 @@ import SOTAlib.MotorController.SOTA_MotorController;
 import SOTAlib.MotorController.SOTA_SparkMax;
 
 public class CompositeMotorFactory {
-    public SOTA_CompositeMotor generateCompositeMotor(CompositeMotorConfig inputConfig) throws IllegalMotorModel, Exception {
+    private static final String kSparkMax = "SPARKMAX";
+
+    public SOTA_CompositeMotor generateCompositeMotor(CompositeMotorConfig inputConfig)
+            throws IllegalMotorModel, Exception {
         Optional<CompositeMotorConfig> config = Optional.ofNullable(inputConfig);
-        MotorControllerFactory motorFactory = new MotorControllerFactory(); //Yes this only has static methods, did this to not break things in future if we need to unstatic those methods
+        MotorControllerFactory motorFactory = new MotorControllerFactory(); // Yes this only has static methods, did
+                                                                            // this to not break things in future if we
+                                                                            // need to unstatic those methods
 
         if (config.isEmpty())
             throw new NullConfigException("CompositeMotorFactory: Null config");
 
-        if (config.get().getEncoderConfig().getEncoderType() == "SPARKMAX") {
+        if (config.get().getEncoderConfig().getEncoderType().equals(kSparkMax)) {
             return sparkmaxEncoderGeneration(config);
-        }else {
-            return new SOTA_CompositeMotorImplementation(motorFactory.generateMotorController(config.get().getMotorConfig()), EncoderFactory.generateAbsoluteEncoder(config.get().getEncoderConfig()));
+        } else {
+            return new SOTA_CompositeMotorImplementation(
+                    motorFactory.generateMotorController(config.get().getMotorConfig()),
+                    EncoderFactory.generateAbsoluteEncoder(config.get().getEncoderConfig()));
         }
     }
 

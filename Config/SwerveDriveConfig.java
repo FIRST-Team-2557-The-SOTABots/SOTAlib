@@ -1,11 +1,13 @@
 package SOTAlib.Config;
 
+import SOTAlib.Math.Conversions;
+
 public class SwerveDriveConfig {
     private double wheelBase;
     private double trackWidth;
     private double wheelDiameter;
     private double gearRatio; // of speed motor
-    private double maxSpeed;
+    private double maxSpeed; //in feet per second
     private double maxAcceleration;
     private double maxAngularVelocity;
     private double speedP;
@@ -15,16 +17,24 @@ public class SwerveDriveConfig {
     private double speedKv;
     private boolean defaultFieldCentric;
 
+    /**
+     * 
+     * @return wheel base in meters
+     */
     public double getWheelBase() {
-        return this.wheelBase;
+        return this.wheelBase * Conversions.METERS_PER_INCH;
     }
 
     public void setWheelBase(double wheelBase) {
         this.wheelBase = wheelBase;
     }
 
+    /**
+     * 
+     * @return track width in meters
+     */
     public double getTrackWidth() {
-        return this.trackWidth;
+        return this.trackWidth * Conversions.METERS_PER_INCH;
     }
 
     public void setTrackWidth(double trackWidth) {
@@ -47,8 +57,12 @@ public class SwerveDriveConfig {
         this.gearRatio = gearRatio;
     }
 
+    /**
+     * 
+     * @return max speed in Meters/second
+     */
     public double getMaxSpeed() {
-        return this.maxSpeed;
+        return Conversions.feetPerSecToMetersPerSec(this.maxSpeed);
     }
 
     public void setMaxSpeed(double maxSpeed) {

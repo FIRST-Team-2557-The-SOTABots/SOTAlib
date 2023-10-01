@@ -100,7 +100,7 @@ public class SwerveModule extends SubsystemBase implements SwerveModuleInterface
 
   @Override
   public Double getDistance() {
-    return speedMotor.getEncoderPosition()  * (kWheelCircumference / kGearRatio);
+    return speedMotor.getEncoderPosition()  * ((Units.inchesToMeters(kWheelCircumference)) / kGearRatio);
   }
 
   @Override

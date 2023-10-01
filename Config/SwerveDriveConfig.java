@@ -13,6 +13,7 @@ public class SwerveDriveConfig {
     private double speedD;
     private double speedKs;
     private double speedKv;
+    private boolean defaultFieldCentric;
 
     public double getWheelBase() {
         return this.wheelBase;
@@ -108,6 +109,10 @@ public class SwerveDriveConfig {
 
     public void setSpeedKv(double speedKv) {
         this.speedKv = speedKv;
+    }
+
+    public boolean getDefaultFieldCentric() {
+        return this.defaultFieldCentric;
     }
     
 }

@@ -108,7 +108,7 @@ public class MotorControllerFactory {
             limits = new MotorPositionLimits(config.getMotorLimitsConfig().getLowerLimit(),
                     config.getMotorLimitsConfig().getUpperLimit(), config.getMotorLimitsConfig().getFinalLimits());
         } catch (NullPointerException e) {
-            System.out.println("SOTA_FalconFX: INFO: no motor limits");
+            System.out.println("SOTA_SparkMax: INFO: no motor limits");
             return new SOTA_SparkMax(config, mMotor);
         }
 
@@ -133,7 +133,7 @@ public class MotorControllerFactory {
         if (config.getCurrentLimit() != 0) {
             motor.configPeakCurrentLimit(config.getCurrentLimit());
         } else {
-            System.out.println("SOTA_FalconFX: INFO: no current limit");
+            System.out.println("SOTA_TalonSRX: INFO: no current limit");
         }
 
         MotorPositionLimits limits;

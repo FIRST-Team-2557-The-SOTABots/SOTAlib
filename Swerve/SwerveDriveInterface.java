@@ -1,62 +1,108 @@
 package SOTAlib.Swerve;
 
-
-import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
-
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
-public interface SwerveDriveInterface extends Subsystem{
-    
-    default void drive(double fwd, double str, double rot){
-        drive(fwd, str, rot, getCurrentAngle());
+public interface SwerveDriveInterface extends Subsystem {
+
+    /**
+     * 
+     * @param frwd forward Input (-1, 1)
+     * @param strf strafe Input (-1, 1)
+     * @param rttn rotational Input (-1, 1)
+     */
+    public default void drive(double frwd, double strf, double rttn) {
+        drive(frwd, strf, rttn, new Translation2d());
     }
-    default void drive(double fwd, double str, double rot, Rotation2d currentAngle){
-        drive(fwd, str, rot, currentAngle, new Translation2d());
+
+    /**
+     * Drives from inputs with a specified center of rotation
+     * 
+     * @param frwd             forward Input (-1, 1)
+     * @param strf             strafe Input (-1, 1)
+     * @param rttn             rotational Input (-1, 1)
+     * @param centerOfRotation center of rotation
+     */
+    public void drive(double frwd, double strf, double rttn, Translation2d centerOfRotation);
+
+    /**
+     * Drives from ChassisSpeeds object for autofollowing
+     * 
+     * @param speeds ChassisSpeeds object
+     */
+    public void drive(ChassisSpeeds speeds);
+
+    /**
+     * Desaturates and sets module states
+     * 
+     * @param states SwerveModule States
+     */
+    public void drive(SwerveModuleState[] states);
+
+    /**
+     * Enables/Disables Fieldcentric driving
+     * @param state desired state
+     */
+    public void setFieldCentric(boolean state);
+
+    /**
+     * Returns the state of FieldCentric Driving
+     * @return if fieldcentric is enabled
+     */
+    public boolean getFieldCentric();
+
+    /**
+     * Toggles field centric driving
+     */
+    public default void toggleFieldCentric() {
+        if (getFieldCentric()) {
+            setFieldCentric(false);
+        } else {
+            setFieldCentric(true);
+        }
     }
-    default void drive(double fwd, double str, double rot, Translation2d pointOfRotation){
-        drive(fwd, str, rot, getCurrentAngle(), pointOfRotation);
-    }
 
-    void drive(double fwd, double str, double rot, Rotation2d currentAngle, Translation2d pointOfRotation);
+    /**
+     * Gets the max speed of the module for desaturation purposes
+     * @return Maximum attainable speed in Meters Per Second.
+     */
+    public double getMaxSpeed();
 
-    void drive(ShiftingSwerveModuleState state);
+    /**
+     * 
+     * @return Maximum angular velocity of the RobotChassis in Radians per second
+     */
+    public double getMaxAngularVelocity();
 
-    void drive(ChassisSpeeds speeds);
+    /**
+     * Resets Gyro angle to 0
+     */
+    public void resetGyro();
 
+    /**
+     * Updates Pose of the robot
+     */
+    public void updatePose();
 
-    void shift(int gear);
+    /**
+     * Sets the pose to a known value
+     * @param pose Pose2d
+     */
+    public void resetPose(Pose2d pose);
 
-    double getMaxWheelSpeed();
+    /**
+     * Gets Pose2d of the robot
+     * @return Pose2d of the robot
+     */
+    public Pose2d getPose2d();
 
-    void updatePose(ShiftingSwerveModuleInterface[] modulePositions, Rotation2d angle);
-
-    void updatePose(PathPlannerState state);
-
-    void updatePose(Pose2d pose2d);
-
-    SwerveModulePosition[] getModulePositions();
-
-    Translation2d[] getModuleTranslations();
-
-    void setFieldCentricActive();
-
-    boolean getFieldCentricActive();
-
-    Pose2d getPose();
-
-    double getAngle();
-    Rotation2d getCurrentAngle();
-
-    double getPitch();
-
-    double getRoll();
-    
-    void resetGyro();
-
-    void setGyro();
+    /**
+     * 
+     * @return SwerveDriveKinematics object of the drivetrain
+     */
+    public SwerveDriveKinematics getKinematics();
 }

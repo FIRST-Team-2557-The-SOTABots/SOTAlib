@@ -41,10 +41,4 @@ public interface SwerveModuleInterface {
      */
     public SwerveModulePosition getPosition();
 
-    /**
-     * updates the internal distance travelled variable
-     */
-    public void updateDistance();
-
-
 }

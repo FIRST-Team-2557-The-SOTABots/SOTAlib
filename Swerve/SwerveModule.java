@@ -43,9 +43,9 @@ public class SwerveModule extends SubsystemBase implements SwerveModuleInterface
   public SwerveModule(SOTA_MotorController speedMotor, SOTA_MotorController angleMotor,
       SOTA_AbsoulteEncoder angleEncoder, SwerveModuleConfig modConfig, SwerveDriveConfig drvConfig) {
 
+    this.moduleName = modConfig.getName();
     this.sTab = Shuffleboard.getTab("Swerve");
     this.encoderPosEntry = sTab.add("Encoder Output: " + moduleName, 0.0).getEntry();
-    this.moduleName = modConfig.getName();
     this.kWheelCircumference = drvConfig.getWheelDiameter() * Math.PI;
     this.kGearRatio = drvConfig.getGearRatio();
     this.kMaxSpeed = drvConfig.getMaxSpeed();

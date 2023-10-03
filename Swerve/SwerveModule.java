@@ -57,6 +57,7 @@ public class SwerveModule extends SubsystemBase implements SwerveModuleInterface
 
     this.angleMotor = angleMotor;
     this.angleEncoder = angleEncoder;
+    this.angleEncoder.setPositionOffset(this.angleEncoder.getPositionOffset() + modConfig.getModuleOffset());
     this.anglePID = new ProfiledPIDController(modConfig.getAngleP(), modConfig.getAngleI(), modConfig.getAngleD(),
         new Constraints(modConfig.getAngleMaxVelocity(), modConfig.getAngleMaxAcceleration()));
     anglePID.enableContinuousInput(0, 1);
@@ -68,7 +69,7 @@ public class SwerveModule extends SubsystemBase implements SwerveModuleInterface
     state = SwerveModuleState.optimize(state, getRotation2d());
 
     double angleRotations = Units.radiansToRotations(state.angle.getRadians());
-    double anglePIDOutput = anglePID.calculate(angleMotor.getEncoderPosition(), angleRotations);
+    double anglePIDOutput = anglePID.calculate(angleEncoder.getConstrainedPositon(), angleRotations);
     double angleFFOutput = angleFF.calculate(anglePID.getSetpoint().velocity);
 
     double speedRPM = metersPerSecondToRPM(state.speedMetersPerSecond);

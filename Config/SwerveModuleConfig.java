@@ -2,6 +2,7 @@ package SOTAlib.Config;
 
 public class SwerveModuleConfig {
     private String name;
+    private double moduleOffset;
     private MotorControllerConfig speedConfig;
     private CompositeMotorConfig angleConfig;
     private double angleP;
@@ -11,6 +12,14 @@ public class SwerveModuleConfig {
     private double angleKv;
     private double angleMaxVelocity;
     private double angleMaxAcceleration;
+
+    public double getModuleOffset() {
+        return this.moduleOffset;
+    }
+
+    public void setModuleOffset(double moduleOffset) {
+        this.moduleOffset = moduleOffset;
+    }
 
     public String getName() {
         return this.name;

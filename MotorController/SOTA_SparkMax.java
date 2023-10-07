@@ -178,4 +178,9 @@ public class SOTA_SparkMax implements SOTA_MotorController {
                 throw new NullNeutralOperationException("SOTA_SparkMax: no idle mode returned by SparkMax");
         }
     }
+
+    @Override
+    public void setEncoderPosition(double position) {
+        mMotor.getEncoder().setPosition(position);
+    }
 }

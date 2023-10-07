@@ -89,12 +89,18 @@ public class MotorControllerFactory {
 
         CANSparkMax mMotor;
         mMotor = new CANSparkMax(config.getPort(), motorType);
+        mMotor.restoreFactoryDefaults();
         mMotor.setInverted(config.getIsInverted());
-        switch (config.getNeutralOperation()) {
-            case "BRAKE":
-                mMotor.setIdleMode(IdleMode.kBrake);
-            case "COAST":
-                mMotor.setIdleMode(IdleMode.kCoast);
+        // switch (config.getNeutralOperation()) {
+        //     case "BRAKE":
+        //         mMotor.setIdleMode(IdleMode.kBrake);
+        //     case "COAST":
+        //         mMotor.setIdleMode(IdleMode.kCoast);
+        // }
+        if (config.getNeutralOperation().equals("BRAKE")) {
+            mMotor.setIdleMode(IdleMode.kBrake);
+        }else if (config.getNeutralOperation().equals("COAST")) {
+            mMotor.setIdleMode(IdleMode.kCoast);
         }
 
         if (config.getCurrentLimit() != -1) {

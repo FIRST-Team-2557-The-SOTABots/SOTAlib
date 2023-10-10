@@ -12,6 +12,8 @@ import SOTAlib.Encoder.Absolute.SOTA_DutyCycle;
 import SOTAlib.Encoder.Relative.QuadratureEncoder;
 import SOTAlib.Encoder.Relative.SOTA_RelativeEncoder;
 import SOTAlib.MotorController.NullConfigException;
+import SOTAlib.MotorController.SOTA_MotorController;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Encoder;
 
 /** Add your docs here. */
@@ -27,7 +29,7 @@ public class EncoderFactory {
         }
         switch (config.getEncoderType()) {
             case "DUTYCYCLE":
-                return new SOTA_DutyCycle(config);
+                return generateDutyCycleEncoder(config);
             case "ANALOG":
                 return new SOTA_AnalogEncoder(config);
             case "CANCODER":
@@ -36,6 +38,17 @@ public class EncoderFactory {
                 throw new Exception(
                         "EncoderFactory: generateAbsoluteEncoder invaild encoder type, only accepts 'DUTYCYCLE', 'ANALOG', and 'CANCODER'");
         }
+    }
+
+    private static SOTA_AbsoulteEncoder generateDutyCycleEncoder(EncoderConfig config) {
+        DutyCycleEncoder oEncoder = new DutyCycleEncoder(config.getPort());
+        
+        double offset = 0.0;
+        if (config.getEncoderOffset() != null) {
+            offset = config.getEncoderOffset();
+        }
+
+        return new SOTA_DutyCycle(oEncoder, offset);
     }
 
     private static QuadratureEncoder generateQuadratureDelegate(EncoderConfig config) throws NullConfigException {

@@ -1,27 +1,20 @@
 package SOTAlib.Encoder.Absolute;
 
-import SOTAlib.Config.EncoderConfig;
-import SOTAlib.MotorController.NullConfigException;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
 public class SOTA_DutyCycle implements SOTA_AbsoulteEncoder {
     private DutyCycleEncoder mEncoder;
+    private double mOffset;
 
-    public SOTA_DutyCycle(EncoderConfig config) throws NullConfigException {
-        if (config == null) {
-            throw new NullConfigException("SOTA_DutyCycle: no config");
-        }
+    public SOTA_DutyCycle(DutyCycleEncoder encdoer, double offset) {
 
-        this.mEncoder = new DutyCycleEncoder(config.getPort());
-
-        if (config.getEncoderOffset() != null) {
-            mEncoder.setPositionOffset(config.getEncoderOffset());
-        }
+        this.mEncoder = encdoer;
+        this.mOffset = offset;
     }
 
     @Override
     public double getPosition() {
-        return mEncoder.get();
+        return (getPositionNoOffset() - mOffset < 0 ? 1 + (getPositionNoOffset() - mOffset) : getPositionNoOffset() - mOffset);
     }
 
     @Override
@@ -31,12 +24,12 @@ public class SOTA_DutyCycle implements SOTA_AbsoulteEncoder {
 
     @Override
     public void setPositionOffset(double offset) {
-        mEncoder.setPositionOffset(offset);
+        mOffset = offset;
     }
 
     @Override
     public double getPositionOffset() {
-        return mEncoder.getPositionOffset();
+        return mOffset;
     }
 
     @Override

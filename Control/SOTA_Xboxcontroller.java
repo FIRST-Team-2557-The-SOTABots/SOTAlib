@@ -3,6 +3,7 @@ package SOTAlib.Control;
 
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class SOTA_Xboxcontroller extends CommandXboxController{
 
@@ -55,5 +56,13 @@ public class SOTA_Xboxcontroller extends CommandXboxController{
 
     public double getRightY() {
         return Math.abs(super.getRightY()) < 0.1 ? 0 : super.getRightY();
+    }
+
+    public Trigger getLeftTrigger() {
+        return super.axisGreaterThan(2, 0.05);
+    }
+
+    public Trigger getRightTrigger() {
+        return super.axisGreaterThan(3, 0.05);
     }
 }

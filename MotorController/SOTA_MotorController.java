@@ -99,9 +99,8 @@ public interface SOTA_MotorController extends MotorController {
     /**
      * Resets the encoder to 0
      * 
-     * @throws NullConfigException
      */
-    void resetEncoder() throws NullConfigException;
+    void resetEncoder();
 
     /**
      * 
@@ -109,5 +108,12 @@ public interface SOTA_MotorController extends MotorController {
      * @throws NullNeutralOperationException
      */
     NeutralOperation getNeutralOperation() throws NullNeutralOperationException;
+
+    /**
+     * Sets the internal encoder position
+     * 
+     * @param position desired encoder position in rotations
+     */
+    void setEncoderPosition(double position);
 
 }

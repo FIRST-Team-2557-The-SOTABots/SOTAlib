@@ -170,4 +170,9 @@ public class SOTA_FalconFX implements SOTA_MotorController {
         throw new NullNeutralOperationException(
                 "SOTA_FalconFX: Ctre didn't implement getting the Neutral Operation from the motor. If you really need to get the Neutral Operation keep track of it in a seperate variable or get build to use a different motor. If you actually get this error email me howardwalz@gmail.com, good luck! :)");
     }
+
+    @Override
+    public void setEncoderPosition(double position) {
+       mMotor.setSelectedSensorPosition(position * kNativeCountsPerRevolution); 
+    }
 }

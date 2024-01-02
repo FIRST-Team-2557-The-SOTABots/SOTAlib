@@ -1,5 +1,7 @@
 package SOTAlib.Factories;
 
+import java.util.Optional;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -92,21 +94,23 @@ public class MotorControllerFactory {
         mMotor.restoreFactoryDefaults();
         mMotor.setInverted(config.getIsInverted());
         // switch (config.getNeutralOperation()) {
-        //     case "BRAKE":
-        //         mMotor.setIdleMode(IdleMode.kBrake);
-        //     case "COAST":
-        //         mMotor.setIdleMode(IdleMode.kCoast);
+        // case "BRAKE":
+        // mMotor.setIdleMode(IdleMode.kBrake);
+        // case "COAST":
+        // mMotor.setIdleMode(IdleMode.kCoast);
         // }
-        if (config.getNeutralOperation().equals("BRAKE")) {
-            mMotor.setIdleMode(IdleMode.kBrake);
-        }else if (config.getNeutralOperation().equals("COAST")) {
-            mMotor.setIdleMode(IdleMode.kCoast);
-        }
+        if (Optional.ofNullable(config.getNeutralOperation()).isPresent()) {
+            if (config.getNeutralOperation().equals("BRAKE")) {
+                mMotor.setIdleMode(IdleMode.kBrake);
+            } else if (config.getNeutralOperation().equals("COAST")) {
+                mMotor.setIdleMode(IdleMode.kCoast);
+            }
 
-        if (config.getCurrentLimit() != -1) {
-            mMotor.setSmartCurrentLimit(config.getCurrentLimit());
-        } else {
-            System.out.println("SOTA_SparkMax: INFO: No current limit set");
+            if (config.getCurrentLimit() != -1) {
+                mMotor.setSmartCurrentLimit(config.getCurrentLimit());
+            } else {
+                System.out.println("SOTA_SparkMax: INFO: No current limit set");
+            }
         }
 
         MotorPositionLimits limits;
@@ -123,7 +127,7 @@ public class MotorControllerFactory {
 
     private static SOTA_TalonSRX generateTalonSRXDelegate(MotorControllerConfig config) {
 
-        double nativeCPR =  config.getCountsPerRevolution();
+        double nativeCPR = config.getCountsPerRevolution();
 
         WPI_TalonSRX motor;
         motor = new WPI_TalonSRX(config.getPort());
@@ -150,7 +154,6 @@ public class MotorControllerFactory {
             System.out.println("SOTA_FalconFX: INFO: no motor limits");
             return new SOTA_TalonSRX(motor, nativeCPR);
         }
-
 
         return new SOTA_TalonSRX(motor, limits, nativeCPR);
     }

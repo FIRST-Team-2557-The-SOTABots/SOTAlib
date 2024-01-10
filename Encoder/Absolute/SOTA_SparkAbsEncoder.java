@@ -18,8 +18,8 @@ public class SOTA_SparkAbsEncoder implements SOTA_AbsoulteEncoder {
     }
 
     @Override
-    public double getPositionNoOffset() {
-        return mEncoder.getPosition() - mEncoder.getZeroOffset();
+    public double getRawPosition() {
+        return mEncoder.getPosition() - mEncoder.getZeroOffset(); //TODO: Should test
     }
 
     @Override

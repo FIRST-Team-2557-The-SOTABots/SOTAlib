@@ -24,11 +24,11 @@ public interface SOTA_AbsoulteEncoder {
     };
 
     /**
-     * Gets the position of the encoder without offset
+     * Gets the raw position of the encoder to be used for setting offsets
      * 
-     * @return position of encoder in rotations
+     * @return position of encoder in raw encoder units (i.e not consistent)
      */
-    public double getPositionNoOffset();
+    public double getRawPosition();
 
     /**
      * Sets the offset of the encoder

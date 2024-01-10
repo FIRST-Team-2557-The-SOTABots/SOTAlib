@@ -14,12 +14,12 @@ public class SOTA_DutyCycle implements SOTA_AbsoulteEncoder {
 
     @Override
     public double getPosition() {
-        return (getPositionNoOffset() - mOffset < 0 ? 1 + (getPositionNoOffset() - mOffset) : getPositionNoOffset() - mOffset);
+        return (getRawPosition() - mOffset < 0 ? 1 + (getRawPosition() - mOffset) : getRawPosition() - mOffset);
     }
 
     @Override
-    public double getPositionNoOffset() {
-        return mEncoder.getAbsolutePosition();
+    public double getRawPosition() {
+        return mEncoder.getAbsolutePosition(); //TODO: Test
     }
 
     @Override

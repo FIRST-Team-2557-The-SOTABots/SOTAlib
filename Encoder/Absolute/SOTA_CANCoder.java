@@ -26,8 +26,8 @@ public class SOTA_CANCoder implements SOTA_AbsoulteEncoder {
     }
 
     @Override
-    public double getPositionNoOffset() {
-        return mEncoder.getAbsolutePosition() / 360;
+    public double getRawPosition() {
+        return mEncoder.getAbsolutePosition() / 360; //TODO: should test
     }
 
     @Override

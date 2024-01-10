@@ -1,5 +1,7 @@
 package SOTAlib.Encoder.Absolute;
 
+import java.util.Optional;
+
 import SOTAlib.Config.EncoderConfig;
 import SOTAlib.MotorController.NullConfigException;
 import edu.wpi.first.math.MathUtil;
@@ -7,7 +9,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
 
 public class SOTA_AnalogEncoder implements SOTA_AbsoulteEncoder {
     private AnalogInput mEncoder;
-    private double mOffset;
+    private double mOffset; //IN VOLTS IF YOU DO IT IN ENCODER POSITIONS IT WILL BE WRONG!!!
     private final double MAX_VOLTAGE = 5.0;
 
     public SOTA_AnalogEncoder(EncoderConfig config) throws NullConfigException {
@@ -17,9 +19,7 @@ public class SOTA_AnalogEncoder implements SOTA_AbsoulteEncoder {
 
         this.mEncoder = new AnalogInput(config.getPort());
 
-        if (config.getEncoderOffset() != null) {
-            mOffset = config.getEncoderOffset();
-        }
+        Optional.ofNullable(config.getEncoderOffset()).ifPresentOrElse((offset) -> {this.mOffset = offset;}, () -> this.mOffset = 0);
     }
 
     @Override
@@ -33,9 +33,8 @@ public class SOTA_AnalogEncoder implements SOTA_AbsoulteEncoder {
     }
 
     @Override
-    public double getPositionNoOffset() {
-        return (-1 * MathUtil.inputModulus(mEncoder.getAverageVoltage(), 0, MAX_VOLTAGE) + MAX_VOLTAGE)
-                / MAX_VOLTAGE;
+    public double getRawPosition() {
+        return mEncoder.getAverageVoltage(); //In VOLTS
     }
 
     @Override

@@ -4,21 +4,15 @@ import java.util.Optional;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import edu.wpi.first.wpilibj.AnalogInput;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import SOTAlib.Config.EncoderConfig;
 import SOTAlib.Config.MotorControllerConfig;
-import SOTAlib.Config.MotorLimitsConfig;
-import SOTAlib.MotorController.SOTA_FalconFX;
 import SOTAlib.MotorController.MotorPositionLimits;
 import SOTAlib.MotorController.NullConfigException;
+import SOTAlib.MotorController.SOTA_FalconFX;
 import SOTAlib.MotorController.SOTA_MotorController;
 import SOTAlib.MotorController.SOTA_SparkMax;
 import SOTAlib.MotorController.SOTA_TalonSRX;
@@ -45,14 +39,17 @@ public class MotorControllerFactory {
             throw new NullConfigException("SOTA_FalconFX: config not created");
 
         WPI_TalonFX falcon = new WPI_TalonFX(config.getPort());
-        falcon.setInverted(config.getIsInverted());
 
-        switch (config.getNeutralOperation()) {
-            case "BRAKE":
-                falcon.setNeutralMode(NeutralMode.Brake);
-            case "COAST":
-                falcon.setNeutralMode(NeutralMode.Coast);
-        }
+        Optional.ofNullable(config.getIsInverted()).ifPresent((invert) -> falcon.setInverted(invert));
+
+        Optional.ofNullable(config.getNeutralOperation()).ifPresent((neutralOp) -> {
+            switch (neutralOp) {
+                case "BRAKE":
+                    falcon.setNeutralMode(NeutralMode.Brake);
+                case "COAST":
+                    falcon.setNeutralMode(NeutralMode.Coast);
+            }
+        });
 
         if (config.getCurrentLimit() != 0) {
             StatorCurrentLimitConfiguration currentConfig = new StatorCurrentLimitConfiguration(true,
@@ -93,12 +90,6 @@ public class MotorControllerFactory {
         mMotor = new CANSparkMax(config.getPort(), motorType);
         mMotor.restoreFactoryDefaults();
         mMotor.setInverted(config.getIsInverted());
-        // switch (config.getNeutralOperation()) {
-        // case "BRAKE":
-        // mMotor.setIdleMode(IdleMode.kBrake);
-        // case "COAST":
-        // mMotor.setIdleMode(IdleMode.kCoast);
-        // }
         if (Optional.ofNullable(config.getNeutralOperation()).isPresent()) {
             if (config.getNeutralOperation().equals("BRAKE")) {
                 mMotor.setIdleMode(IdleMode.kBrake);
@@ -133,12 +124,14 @@ public class MotorControllerFactory {
         motor = new WPI_TalonSRX(config.getPort());
         motor.setInverted(config.getIsInverted());
 
-        switch (config.getNeutralOperation()) {
-            case "BRAKE":
-                motor.setNeutralMode(NeutralMode.Brake);
-            case "COAST":
-                motor.setNeutralMode(NeutralMode.Coast);
-        }
+        Optional.ofNullable(config.getNeutralOperation()).ifPresent((neutralOp) -> {
+            switch (config.getNeutralOperation()) {
+                case "BRAKE":
+                    motor.setNeutralMode(NeutralMode.Brake);
+                case "COAST":
+                    motor.setNeutralMode(NeutralMode.Coast);
+            }
+        });
 
         if (config.getCurrentLimit() != 0) {
             motor.configPeakCurrentLimit(config.getCurrentLimit());

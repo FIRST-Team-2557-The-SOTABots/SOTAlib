@@ -3,9 +3,10 @@ package SOTAlib.Factories;
 import java.util.Optional;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
@@ -39,23 +40,24 @@ public class MotorControllerFactory {
         if (config == null)
             throw new NullConfigException("SOTA_FalconFX: config not created");
 
-        WPI_TalonFX falcon = new WPI_TalonFX(config.getPort());
+        TalonFX falcon = new TalonFX(config.getPort());
 
         Optional.ofNullable(config.getIsInverted()).ifPresent((invert) -> falcon.setInverted(invert));
 
         Optional.ofNullable(config.getNeutralOperation()).ifPresent((neutralOp) -> {
             switch (neutralOp) {
                 case "BRAKE":
-                    falcon.setNeutralMode(NeutralMode.Brake);
+                    falcon.setNeutralMode(NeutralModeValue.Brake);
                 case "COAST":
-                    falcon.setNeutralMode(NeutralMode.Coast);
+                    falcon.setNeutralMode(NeutralModeValue.Coast);
             }
         });
 
         if (config.getCurrentLimit() != 0) {
-            StatorCurrentLimitConfiguration currentConfig = new StatorCurrentLimitConfiguration(true,
-                    config.getCurrentLimit(), config.getCurrentLimit(), 1.0);
-            falcon.configStatorCurrentLimit(currentConfig);
+            CurrentLimitsConfigs configuration = new CurrentLimitsConfigs();
+            configuration.SupplyCurrentLimit = config.getCurrentLimit();
+            configuration.SupplyCurrentLimitEnable = true;
+            falcon.getConfigurator().apply(configuration);
         }
 
         MotorPositionLimits limits;

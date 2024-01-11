@@ -3,8 +3,9 @@ package SOTAlib.MotorController;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
+
 import SOTAlib.Config.MotorControllerConfig;
 
 public class SOTA_SparkMax implements SOTA_MotorController {

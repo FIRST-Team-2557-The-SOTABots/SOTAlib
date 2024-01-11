@@ -9,6 +9,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkMax;
 
 import SOTAlib.Config.MotorControllerConfig;
@@ -16,6 +17,7 @@ import SOTAlib.MotorController.MotorPositionLimits;
 import SOTAlib.MotorController.NullConfigException;
 import SOTAlib.MotorController.SOTA_FalconFX;
 import SOTAlib.MotorController.SOTA_MotorController;
+import SOTAlib.MotorController.SOTA_SparkFlex;
 import SOTAlib.MotorController.SOTA_SparkMax;
 import SOTAlib.MotorController.SOTA_TalonSRX;
 
@@ -26,10 +28,12 @@ public class MotorControllerFactory {
         switch (config.getMotorModel()) {
             case "Falcon":
                 return generateFalconDelegate(config);
-            case "SparkMax":
-                return generateSparkMaxDelegate(config);
             case "Talon":
                 return generateTalonSRXDelegate(config);
+            case "SparkMax":
+                return generateSparkMaxDelegate(config);
+            case "SparkFlex":
+                return generateSparkFlexDelegate(config);
         }
         throw new IllegalMotorModel(
                 "Illegal Motor Model, check config has valid motor types 'Falcon', 'SparkMax', or 'Talon'");
@@ -117,6 +121,51 @@ public class MotorControllerFactory {
         }
 
         return new SOTA_SparkMax(config, mMotor, limits);
+    }
+
+
+
+    private static SOTA_MotorController generateSparkFlexDelegate(MotorControllerConfig config) throws NullConfigException {
+        MotorType motorType;
+        switch (config.getMotorType()) {
+            case ("BRUSHLESS"):
+                motorType = MotorType.kBrushless;
+                break;
+            case ("BRUSHED"):
+                motorType = MotorType.kBrushed;
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal motor type");
+        }
+
+        CANSparkFlex mMotor;
+        mMotor = new CANSparkFlex(config.getPort(), motorType);
+        mMotor.restoreFactoryDefaults();
+        mMotor.setInverted(config.getIsInverted());
+        if (Optional.ofNullable(config.getNeutralOperation()).isPresent()) {
+            if (config.getNeutralOperation().equals("BRAKE")) {
+                mMotor.setIdleMode(IdleMode.kBrake);
+            } else if (config.getNeutralOperation().equals("COAST")) {
+                mMotor.setIdleMode(IdleMode.kCoast);
+            }
+
+            if (config.getCurrentLimit() != -1) {
+                mMotor.setSmartCurrentLimit(config.getCurrentLimit());
+            } else {
+                System.out.println("SOTA_SparkFlex: INFO: No current limit set");
+            }
+        }
+
+        MotorPositionLimits limits;
+        try {
+            limits = new MotorPositionLimits(config.getMotorLimitsConfig().getLowerLimit(),
+                    config.getMotorLimitsConfig().getUpperLimit(), config.getMotorLimitsConfig().getFinalLimits());
+        } catch (NullPointerException e) {
+            System.out.println("SOTA_SparkFlex: INFO: no motor limits");
+            return new SOTA_SparkFlex(config, mMotor);
+        }
+
+        return new SOTA_SparkFlex(config, mMotor, limits);
     }
 
     private static SOTA_TalonSRX generateTalonSRXDelegate(MotorControllerConfig config) {

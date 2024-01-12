@@ -48,7 +48,7 @@ public class EncoderFactory {
             offset = config.getEncoderOffset();
         }
 
-        return new SOTA_DutyCycle(oEncoder, offset);
+        return new SOTA_DutyCycle(oEncoder, offset, config.getIsInverted());
     }
 
     private static QuadratureEncoder generateQuadratureDelegate(EncoderConfig config) throws NullConfigException {

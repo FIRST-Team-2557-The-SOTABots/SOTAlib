@@ -5,21 +5,30 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 public class SOTA_DutyCycle implements SOTA_AbsoulteEncoder {
     private DutyCycleEncoder mEncoder;
     private double mOffset;
+    private boolean isInverted;
 
-    public SOTA_DutyCycle(DutyCycleEncoder encdoer, double offset) {
+    public SOTA_DutyCycle(DutyCycleEncoder encoder, double offset, boolean isInverted) {
 
-        this.mEncoder = encdoer;
+        this.mEncoder = encoder;
         this.mOffset = offset;
+        this.isInverted = isInverted;
     }
 
     @Override
     public double getPosition() {
-        return (getRawPosition() - mOffset < 0 ? 1 + (getRawPosition() - mOffset) : getRawPosition() - mOffset);
+        double output;
+        if (isInverted) {
+            output = 1 - (mEncoder.getAbsolutePosition() - mOffset);
+        } else {
+            output = mEncoder.getAbsolutePosition() - mOffset;
+        }
+
+        return output;
     }
 
     @Override
     public double getRawPosition() {
-        return mEncoder.getAbsolutePosition(); //TODO: Test
+        return mEncoder.getAbsolutePosition();
     }
 
     @Override
@@ -35,5 +44,15 @@ public class SOTA_DutyCycle implements SOTA_AbsoulteEncoder {
     @Override
     public int getPort() {
         return mEncoder.getSourceChannel();
+    }
+
+    @Override
+    public void setInverted(boolean isInverted) {
+        this.isInverted = isInverted;
+    }
+
+    @Override
+    public boolean getInverted() {
+        return this.isInverted;
     }
 }

@@ -7,12 +7,10 @@ package SOTAlib.Factories;
 import SOTAlib.Config.EncoderConfig;
 import SOTAlib.Encoder.Absolute.SOTA_AbsoulteEncoder;
 import SOTAlib.Encoder.Absolute.SOTA_AnalogEncoder;
-import SOTAlib.Encoder.Absolute.SOTA_CANCoder;
 import SOTAlib.Encoder.Absolute.SOTA_DutyCycle;
 import SOTAlib.Encoder.Relative.QuadratureEncoder;
 import SOTAlib.Encoder.Relative.SOTA_RelativeEncoder;
 import SOTAlib.MotorController.NullConfigException;
-import SOTAlib.MotorController.SOTA_MotorController;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Encoder;
 
@@ -32,8 +30,6 @@ public class EncoderFactory {
                 return generateDutyCycleEncoder(config);
             case "ANALOG":
                 return new SOTA_AnalogEncoder(config);
-            case "CANCODER":
-                return new SOTA_CANCoder(config);
             default:
                 throw new Exception(
                         "EncoderFactory: generateAbsoluteEncoder invaild encoder type, only accepts 'DUTYCYCLE', 'ANALOG', and 'CANCODER'");

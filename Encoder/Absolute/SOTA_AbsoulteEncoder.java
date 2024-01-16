@@ -8,7 +8,8 @@ package SOTAlib.Encoder.Absolute;
 public interface SOTA_AbsoulteEncoder {
 
     /**
-     * Gets the position of the encoder in rotations
+     * Gets the position of the encoder in rotations.
+     * Set invert so CounterClockWise movement is positive.
      * 
      * @return position of encoder in rotations
      */
@@ -16,6 +17,7 @@ public interface SOTA_AbsoulteEncoder {
 
     /**
      * GetPosition but constrained to an output between 0 and 1
+     * Set invert so CounterClockWise movement is positive.
      * @return encoder position constrained to between 0 and 1, rotations
      */
     public default double getConstrainedPositon() {
@@ -49,4 +51,16 @@ public interface SOTA_AbsoulteEncoder {
      * @return port Number
      */
     public int getPort();
+
+    /**
+     * Sets inversion state of the motor, counter clockwise motion should result in positive values
+     * @param isInverted true if motor is inverted, otherwise false
+     */
+    public void setInverted(boolean isInverted);
+
+    /**
+     * Gets the inversion status of the encoder
+     * @return inversion status of the encoder
+     */
+    public boolean getInverted();
 }

@@ -95,17 +95,7 @@ public class CompositeMotorFactory {
 
         AbsoluteEncoder mEncoder = mMotor.getAbsoluteEncoder(Type.kDutyCycle);
 
-        if (encoderConfig.getIsInverted()) {
-            mEncoder.setInverted(true);
-        } else {
-            mEncoder.setInverted(false);
-        }
-
-        if (encoderConfig.getEncoderOffset() != null) {
-            mEncoder.setZeroOffset(encoderConfig.getEncoderOffset());
-        }
-
-        absoulteEncoder = new SOTA_SparkAbsEncoder(mEncoder, mMotor.getDeviceId());
+        absoulteEncoder = new SOTA_SparkAbsEncoder(mEncoder, mMotor.getDeviceId(), encoderConfig.getIsInverted(), encoderConfig.getEncoderOffset());
 
         return new SOTA_CompositeMotorImplementation(motorController, absoulteEncoder);
     }

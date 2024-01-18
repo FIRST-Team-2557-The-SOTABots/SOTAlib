@@ -3,10 +3,10 @@ package SOTAlib.Factories;
 import java.util.Optional;
 
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 
 import SOTAlib.Config.CompositeMotorConfig;
 import SOTAlib.Config.EncoderConfig;
@@ -26,9 +26,6 @@ public class CompositeMotorFactory {
     public SOTA_CompositeMotor generateCompositeMotor(CompositeMotorConfig inputConfig)
             throws IllegalMotorModel, Exception {
         Optional<CompositeMotorConfig> config = Optional.ofNullable(inputConfig);
-        MotorControllerFactory motorFactory = new MotorControllerFactory(); // Yes this only has static methods, did
-                                                                            // this to not break things in future if we
-                                                                            // need to unstatic those methods
 
         if (config.isEmpty())
             throw new NullConfigException("CompositeMotorFactory: Null config");
@@ -37,7 +34,7 @@ public class CompositeMotorFactory {
             return sparkmaxEncoderGeneration(config);
         } else {
             return new SOTA_CompositeMotorImplementation(
-                    motorFactory.generateMotorController(config.get().getMotorConfig()),
+                    MotorControllerFactory.generateMotorController(config.get().getMotorConfig()),
                     EncoderFactory.generateAbsoluteEncoder(config.get().getEncoderConfig()));
         }
     }

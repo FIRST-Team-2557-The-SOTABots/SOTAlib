@@ -20,7 +20,7 @@ public class EncoderFactory {
         return generateQuadratureDelegate(config);
     }
 
-    //TODO: Make all of these consistent with the rest of the factories
+    // TODO: Make all of these consistent with the rest of the factories
     public static SOTA_AbsoulteEncoder generateAbsoluteEncoder(EncoderConfig config) throws Exception {
         if (config == null) {
             throw new NullConfigException("EncoderFacotry: Null Config");
@@ -38,7 +38,7 @@ public class EncoderFactory {
 
     private static SOTA_AbsoulteEncoder generateDutyCycleEncoder(EncoderConfig config) {
         DutyCycleEncoder oEncoder = new DutyCycleEncoder(config.getPort());
-        
+
         double offset = 0.0;
         if (config.getEncoderOffset() != null) {
             offset = config.getEncoderOffset();

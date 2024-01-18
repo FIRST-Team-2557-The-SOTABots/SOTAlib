@@ -1,26 +1,25 @@
 package SOTAlib.MotorController;
 
-import java.lang.StackWalker.Option;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import SOTAlib.Config.MotorControllerConfig;
 
 public class SOTA_FalconFX implements SOTA_MotorController {
     private double kNativeCountsPerRevolution = 2048;
-    private final WPI_TalonFX mMotor;
+    private final TalonFX mMotor;
     private Optional<MotorPositionLimits> mMotorLimits; // TODO: make optional
     private Supplier<NullConfigException> mNullExceptionSupplier;
 
-    public SOTA_FalconFX(MotorControllerConfig config, WPI_TalonFX motor) throws NullConfigException {
+    public SOTA_FalconFX(MotorControllerConfig config, TalonFX motor) throws NullConfigException {
         this(config, motor, null);
     }
 
-    public SOTA_FalconFX(MotorControllerConfig config, WPI_TalonFX falcon, MotorPositionLimits limits)
+    public SOTA_FalconFX(MotorControllerConfig config, TalonFX falcon, MotorPositionLimits limits)
             throws NullConfigException {
         if (config == null)
             throw new NullConfigException("SOTA_FalconFX: config not created");
@@ -38,11 +37,11 @@ public class SOTA_FalconFX implements SOTA_MotorController {
                     speed = 0;
             }
         }
-        mMotor.set(TalonFXControlMode.PercentOutput, speed);
+        mMotor.set(speed);
     }
 
     public double get() {
-        return mMotor.getMotorOutputPercent();
+        return mMotor.get();
     }
 
     public void setInverted(boolean isInverted) {
@@ -56,36 +55,36 @@ public class SOTA_FalconFX implements SOTA_MotorController {
     public void setNeutralOperation(NeutralOperation neutralOperation) {
         switch (neutralOperation) {
             case kBrake:
-                mMotor.setNeutralMode(NeutralMode.Brake);
+                mMotor.setNeutralMode(NeutralModeValue.Brake);
                 break;
             case kCoast:
-                mMotor.setNeutralMode(NeutralMode.Coast);
+                mMotor.setNeutralMode(NeutralModeValue.Coast);
                 break;
         }
 
     }
 
     public double getEncoderVelocity() {
-        return nativeVelocityToRPM(mMotor.getSelectedSensorVelocity());
+        return mMotor.getRotorVelocity().getValueAsDouble();
     }
 
     public double getEncoderPosition() {
-        return nativePositionToRotations(mMotor.getSelectedSensorPosition());
+        return mMotor.getRotorPosition().getValueAsDouble();
     }
 
     public double getMotorTemperature() {
-        return mMotor.getTemperature();
+        return mMotor.getDeviceTemp().getValueAsDouble();
     }
 
     public double getMotorCurrent() {
-        return mMotor.getStatorCurrent();
+        return mMotor.getSupplyCurrent().getValueAsDouble();
     }
 
-    // TODO: arbitrary number for current limits works for swerve but who knows what
-    // will happen
     public void setCurrentLimit(int amps) {
-        StatorCurrentLimitConfiguration config = new StatorCurrentLimitConfiguration(true, amps, amps, 1.0);
-        mMotor.configStatorCurrentLimit(config);
+        CurrentLimitsConfigs configuration = new CurrentLimitsConfigs();
+        configuration.SupplyCurrentLimit = amps;
+        configuration.SupplyCurrentLimitEnable = true;
+        mMotor.getConfigurator().apply(configuration);
     }
 
     public void setPositionLimits(MotorPositionLimits limits) {
@@ -97,17 +96,31 @@ public class SOTA_FalconFX implements SOTA_MotorController {
     }
 
     public void disable() {
-        mMotor.neutralOutput();
+        mMotor.disable();
     }
 
     public void stopMotor() {
-        mMotor.neutralOutput();
+        mMotor.stopMotor();
     }
 
+    /**
+     * Converts from native encoder velocity to RPM
+     * 
+     * @deprecated CTRE switched to revolutions
+     * @param ticks native encoder ticks
+     * @return velocity in rotations per minute
+     */
     private double nativeVelocityToRPM(double ticks) {
         return ticks * 600 / kNativeCountsPerRevolution;
     }
 
+    /**
+     * Converts from native encoder position to revolutions
+     * 
+     * @deprecated CTRE switched to revolutions
+     * @param ticks native encoder ticks
+     * @return position in rotations
+     */
     private double nativePositionToRotations(double ticks) {
         return ticks / kNativeCountsPerRevolution;
     }
@@ -162,7 +175,7 @@ public class SOTA_FalconFX implements SOTA_MotorController {
 
     @Override
     public void resetEncoder() {
-        mMotor.setSelectedSensorPosition(0.0);
+        mMotor.setPosition(0.0);
     }
 
     @Override
@@ -173,6 +186,6 @@ public class SOTA_FalconFX implements SOTA_MotorController {
 
     @Override
     public void setEncoderPosition(double position) {
-       mMotor.setSelectedSensorPosition(position * kNativeCountsPerRevolution); 
+        mMotor.setPosition(position);
     }
 }

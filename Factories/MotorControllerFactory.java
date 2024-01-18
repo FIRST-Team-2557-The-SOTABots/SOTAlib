@@ -23,6 +23,15 @@ import SOTAlib.MotorController.SOTA_TalonSRX;
 
 public class MotorControllerFactory {
 
+    /**
+     * Generates a new SOTA_MotorController with the configuration for the motor as
+     * a parameter
+     * 
+     * @param config The MotorControllerConfig that will be used for the new motor.
+     * @return Returns a SOTA_MotorController with the config as specified.
+     * @throws IllegalMotorModel   Throws if the model of the motor is invalid
+     * @throws NullConfigException Throws if config is null
+     */
     public static SOTA_MotorController generateMotorController(MotorControllerConfig config)
             throws IllegalMotorModel, NullConfigException {
         switch (config.getMotorModel()) {
@@ -39,6 +48,15 @@ public class MotorControllerFactory {
                 "Illegal Motor Model, check config has valid motor types 'Falcon', 'SparkMax', or 'Talon'");
     }
 
+    /**
+     * Generates a Falcon motor as a SOTA_MotorController with the config of the
+     * motor as a parameter
+     * 
+     * @param config The MotorContorllerConfig used to generate the settings of the
+     *               Falcon
+     * @return Returns a SOTA_MotorController of a Falcon motor
+     * @throws NullConfigException Throws if config is null
+     */
     private static SOTA_MotorController generateFalconDelegate(MotorControllerConfig config)
             throws NullConfigException {
         if (config == null)
@@ -78,6 +96,15 @@ public class MotorControllerFactory {
         return new SOTA_FalconFX(config, falcon, limits);
     }
 
+    /**
+     * Generates a SparkMax motor as a SOTA_MotorController with the config of the
+     * motor as a parameter
+     * 
+     * @param config The MotorContorllerConfig used to generate the settings of the
+     *               SparkMax
+     * @return Returns a SOTA_MotorController of a SparkMax motor
+     * @throws NullConfigException Throws if config is null
+     */
     private static SOTA_MotorController generateSparkMaxDelegate(MotorControllerConfig config)
             throws NullConfigException {
 
@@ -123,9 +150,17 @@ public class MotorControllerFactory {
         return new SOTA_SparkMax(config, mMotor, limits);
     }
 
-
-
-    private static SOTA_MotorController generateSparkFlexDelegate(MotorControllerConfig config) throws NullConfigException {
+    /**
+     * Generates a SparkFlex motor as a SOTA_MotorController with the config of the
+     * motor as a parameter
+     * 
+     * @param config The MotorContorllerConfig used to generate the settings of the
+     *               SparkFlex
+     * @return Returns a SOTA_MotorController of a SparkFlex motor
+     * @throws NullConfigException Throws if config is null
+     */
+    private static SOTA_MotorController generateSparkFlexDelegate(MotorControllerConfig config)
+            throws NullConfigException {
         MotorType motorType;
         switch (config.getMotorType()) {
             case ("BRUSHLESS"):
@@ -168,6 +203,15 @@ public class MotorControllerFactory {
         return new SOTA_SparkFlex(config, mMotor, limits);
     }
 
+    /**
+     * Generates a SOTA_TalonSRX, a MotorController, with the configuration of the
+     * controller as a parameter
+     * 
+     * @param config The MotorContollerConfig used to configure the motor when
+     *               created
+     * @return Returns a SOTA_TalonSRX that is created with the configuration as
+     *         specified by the parameter
+     */
     private static SOTA_TalonSRX generateTalonSRXDelegate(MotorControllerConfig config) {
 
         double nativeCPR = config.getCountsPerRevolution();

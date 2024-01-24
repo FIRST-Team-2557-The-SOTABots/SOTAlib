@@ -15,6 +15,7 @@ public class Conversions {
 
     /**
      * Converts from a feet per second value to a meters per second value
+     * 
      * @param fps speed in feet per second
      * @return speed in meters per second
      */
@@ -24,6 +25,7 @@ public class Conversions {
 
     /**
      * Converts from rotations to Radians
+     * 
      * @param rots angle measurement in rotations
      * @return angle measurement in radians
      */
@@ -33,10 +35,22 @@ public class Conversions {
 
     /**
      * Converts from radians to rotations
+     * 
      * @param rads angle measurement in radians
      * @return angle measurement in rotations
      */
     public static double radsToRots(double rads) {
         return rads / (2 * Math.PI);
+    }
+
+    /**
+     * Converts from a meters per second wheel value to RPM of the motor
+     * @param MPS meters per second 
+     * @param kWheelCircumference wheel circumfrence in inches
+     * @param gearRatio gear ratio from output wheel to input motor
+     * @return
+     */
+    public static double metersPerSecondToRPM(double MPS, double kWheelCircumference, double gearRatio) {
+        return (60 / ((2 * Math.PI) * (kWheelCircumference / 2))) * MPS * gearRatio; //TODO: check this math
     }
 }

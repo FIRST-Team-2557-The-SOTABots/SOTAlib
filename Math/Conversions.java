@@ -45,12 +45,13 @@ public class Conversions {
 
     /**
      * Converts from a meters per second wheel value to RPM of the motor
-     * @param MPS meters per second 
+     * 
+     * @param MPS                 meters per second
      * @param kWheelCircumference wheel circumfrence in inches
-     * @param gearRatio gear ratio from output wheel to input motor
+     * @param gearRatio           gear ratio from output wheel to input motor
      * @return
      */
     public static double metersPerSecondToRPM(double MPS, double kWheelCircumference, double gearRatio) {
-        return (60 / ((2 * Math.PI) * (kWheelCircumference / 2))) * MPS * gearRatio; //TODO: check this math
+        return (60 / ((2 * Math.PI) * (kWheelCircumference / 2))) * MPS * gearRatio; // TODO: check this math
     }
 }

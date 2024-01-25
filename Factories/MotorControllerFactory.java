@@ -8,8 +8,8 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkFlex;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 
 import SOTAlib.Config.MotorControllerConfig;
@@ -24,8 +24,7 @@ import SOTAlib.MotorController.SOTA_TalonSRX;
 public class MotorControllerFactory {
 
     /**
-     * Generates a new SOTA_MotorController with the configuration for the motor as
-     * a parameter
+     * Generates a new SOTA_MotorController
      * 
      * @param config The MotorControllerConfig that will be used for the new motor.
      * @return Returns a SOTA_MotorController with the config as specified.
@@ -49,8 +48,7 @@ public class MotorControllerFactory {
     }
 
     /**
-     * Generates a Falcon motor as a SOTA_MotorController with the config of the
-     * motor as a parameter
+     * Generates a Falcon motor as a SOTA_MotorController
      * 
      * @param config The MotorContorllerConfig used to generate the settings of the
      *               Falcon
@@ -97,8 +95,7 @@ public class MotorControllerFactory {
     }
 
     /**
-     * Generates a SparkMax motor as a SOTA_MotorController with the config of the
-     * motor as a parameter
+     * Generates a SparkMax motor as a SOTA_MotorController
      * 
      * @param config The MotorContorllerConfig used to generate the settings of the
      *               SparkMax
@@ -151,8 +148,7 @@ public class MotorControllerFactory {
     }
 
     /**
-     * Generates a SparkFlex motor as a SOTA_MotorController with the config of the
-     * motor as a parameter
+     * Generates a SparkFlex motor as a SOTA_MotorController
      * 
      * @param config The MotorContorllerConfig used to generate the settings of the
      *               SparkFlex
@@ -204,13 +200,10 @@ public class MotorControllerFactory {
     }
 
     /**
-     * Generates a SOTA_TalonSRX, a MotorController, with the configuration of the
-     * controller as a parameter
+     * Generates a TalonSRX as a SOTA_MotorController
      * 
-     * @param config The MotorContollerConfig used to configure the motor when
-     *               created
-     * @return Returns a SOTA_TalonSRX that is created with the configuration as
-     *         specified by the parameter
+     * @param config The MotorContollerConfig used to configure the motor
+     * @return Returns a SOTA_TalonSRX
      */
     private static SOTA_TalonSRX generateTalonSRXDelegate(MotorControllerConfig config) {
 

@@ -4,18 +4,17 @@
 
 package SOTAlib.Config;
 
-import javax.swing.plaf.TreeUI;
-
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 
 /**
  * Config class for generating encoders
  */
 public class EncoderConfig {
+
     /**
      * Port of the encoder
      * For Analog and DutyCycle/PWM encoders
-     * REQUIREbD
+     * REQUIRED
      */
     private int port;
 

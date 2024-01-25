@@ -15,10 +15,43 @@ public class Conversions {
 
     /**
      * Converts from a feet per second value to a meters per second value
+     * 
      * @param fps speed in feet per second
      * @return speed in meters per second
      */
     public static double feetPerSecToMetersPerSec(double fps) {
         return fps / 3.281;
+    }
+
+    /**
+     * Converts from rotations to Radians
+     * 
+     * @param rots angle measurement in rotations
+     * @return angle measurement in radians
+     */
+    public static double rotsToRads(double rots) {
+        return rots * 2 * Math.PI;
+    }
+
+    /**
+     * Converts from radians to rotations
+     * 
+     * @param rads angle measurement in radians
+     * @return angle measurement in rotations
+     */
+    public static double radsToRots(double rads) {
+        return rads / (2 * Math.PI);
+    }
+
+    /**
+     * Converts from a meters per second wheel value to RPM of the motor
+     * 
+     * @param MPS           meters per second
+     * @param wheelDiameter wheel diameter in inches
+     * @param gearRatio     gear ratio from output wheel to input motor
+     * @return
+     */
+    public static double metersPerSecondToRPM(double MPS, double wheelDiameter, double gearRatio) {
+        return (60 * MPS * gearRatio) / (0.0254 * wheelDiameter * Math.PI); // 0.0254 goes from inches to meters
     }
 }

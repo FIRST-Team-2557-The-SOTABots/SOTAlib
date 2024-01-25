@@ -6,17 +6,72 @@ package SOTAlib.Config;
 
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 
-/** Add your docs here. */
+/**
+ * Config class for generating encoders
+ */
 public class EncoderConfig {
-    private int port; // for analog and DutyCycle/PWM encoders
-    private int sourceA; // for Quadrature encoders only
-    private int sourceB; // for Quadrature encoders only
-    private Integer sourceI; // for Quadrature encoders only
-    private EncodingType encodingType; // for Quadrature encoders only
-    private boolean isInverted; //for Quadrature encoders only
-    private Double encoderOffset; // for analog and DutyCycle/pwm encoders
-    private int countsPerRevolution; // for Quadrature encoders only
-    private String encoderType; // "QUAD", "DUTYCYCLE", "SPARKMAX", or "ANALOG"
+
+    /**
+     * Port of the encoder
+     * For Analog and DutyCycle/PWM encoders
+     * REQUIRED
+     */
+    private int port;
+
+    /**
+     * Source A
+     * for Quadrature encoders only
+     */
+    private int sourceA;
+
+    /**
+     * Source B
+     * for Quadrature encoders only
+     */
+    private int sourceB;
+
+    /**
+     * Source I
+     * for Quadrature encoders only
+     */
+    private Integer sourceI;
+
+    /**
+     * Encoding type
+     * For Quadrature encoders only
+     */
+    private EncodingType encodingType;
+
+    /**
+     * Whether the encoder is inverted
+     * true if encoder IS inverted
+     * false if encoder IS NOT inverted
+     * For all encoders
+     */
+    private boolean isInverted;
+
+    /**
+     * Offset of the encoder
+     * For absolute encoders only
+     * Must set from get raw position
+     */
+    private Double encoderOffset;
+
+    /**
+     * Counts per revoution of the encoder
+     * For Quadrature encoders only
+     * REQUIRED FOR QUADRATURE ENCODERS
+     */
+    private int countsPerRevolution;
+
+    /**
+     * Type/Name of encoder. Options between:
+     * "QUAD",
+     * "DUTYCYCLE",
+     * "SPARKMAX",
+     * "ANALOG"
+     */
+    private String encoderType;
 
     public int getPort() {
         return port;

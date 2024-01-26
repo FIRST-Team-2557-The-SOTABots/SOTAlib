@@ -60,13 +60,11 @@ public class CompositeMotorFactory {
         CANSparkMax mMotor;
         mMotor = new CANSparkMax(motorConfig.getPort(), motorType);
         mMotor.setInverted(motorConfig.getIsInverted());
-        switch (motorConfig.getNeutralOperation()) {
-            case "BRAKE":
-                mMotor.setIdleMode(IdleMode.kBrake);
-            case "COAST":
-                mMotor.setIdleMode(IdleMode.kCoast);
+        if (motorConfig.getNeutralOperation().equals("BRAKE")) {
+            mMotor.setIdleMode(IdleMode.kBrake);
+        } else if (motorConfig.getNeutralOperation().equals("COAST")) {
+            mMotor.setIdleMode(IdleMode.kCoast);
         }
-
         if (motorConfig.getCurrentLimit() != -1) {
             mMotor.setSmartCurrentLimit(motorConfig.getCurrentLimit());
         } else {
@@ -92,7 +90,8 @@ public class CompositeMotorFactory {
 
         AbsoluteEncoder mEncoder = mMotor.getAbsoluteEncoder(Type.kDutyCycle);
 
-        absoulteEncoder = new SOTA_SparkAbsEncoder(mEncoder, mMotor.getDeviceId(), encoderConfig.getIsInverted(), encoderConfig.getEncoderOffset());
+        absoulteEncoder = new SOTA_SparkAbsEncoder(mEncoder, mMotor.getDeviceId(), encoderConfig.getIsInverted(),
+                encoderConfig.getEncoderOffset());
 
         return new SOTA_CompositeMotorImplementation(motorController, absoulteEncoder);
     }

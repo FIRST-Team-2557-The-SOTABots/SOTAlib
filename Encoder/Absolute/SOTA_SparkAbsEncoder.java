@@ -2,6 +2,8 @@ package SOTAlib.Encoder.Absolute;
 
 import com.revrobotics.AbsoluteEncoder;
 
+import SOTAlib.Math.Conversions;
+
 public class SOTA_SparkAbsEncoder implements SOTA_AbsoulteEncoder {
 
     private AbsoluteEncoder mEncoder;
@@ -24,7 +26,8 @@ public class SOTA_SparkAbsEncoder implements SOTA_AbsoulteEncoder {
         } else {
             output = mEncoder.getPosition() - mOffset;
         }
-        return output;
+
+        return Conversions.radsToRots(output);
     }
 
     @Override
@@ -34,12 +37,12 @@ public class SOTA_SparkAbsEncoder implements SOTA_AbsoulteEncoder {
 
     @Override
     public void setPositionOffset(double offset) {
-       mOffset = offset; 
+        mOffset = offset;
     }
 
     @Override
     public double getPositionOffset() {
-       return mOffset; 
+        return mOffset;
     }
 
     @Override
@@ -49,12 +52,12 @@ public class SOTA_SparkAbsEncoder implements SOTA_AbsoulteEncoder {
 
     @Override
     public void setInverted(boolean isInverted) {
-       this.inverted = isInverted; 
+        this.inverted = isInverted;
     }
 
     @Override
     public boolean getInverted() {
         return inverted;
     }
-    
+
 }

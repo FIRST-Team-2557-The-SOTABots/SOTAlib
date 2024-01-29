@@ -54,4 +54,8 @@ public class Conversions {
     public static double metersPerSecondToRPM(double MPS, double wheelDiameter, double gearRatio) {
         return (60 * MPS * gearRatio) / (0.0254 * wheelDiameter * Math.PI); // 0.0254 goes from inches to meters
     }
+
+    public static double rotationsToMeters(double gearRatio, double wheelDiameter, double encoderPosition) {
+        return (METERS_PER_INCH * Math.PI * encoderPosition * wheelDiameter) / (gearRatio);
+    }
 }

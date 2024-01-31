@@ -62,4 +62,13 @@ public class Conversions {
     public static double rotationsToMeters(double gearRatio, double wheelDiameter, double encoderPosition) {
         return (METERS_PER_INCH * Math.PI * encoderPosition * wheelDiameter) / (gearRatio);
     }
+
+    /**
+     * Converts from inches to meters.
+     * @param inches measurement in inches
+     * @return measurement in meters
+     */
+    public static double inchesToMeters(double inches) {
+        return inches * METERS_PER_INCH;
+    }
 }

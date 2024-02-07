@@ -54,4 +54,21 @@ public class Conversions {
     public static double metersPerSecondToRPM(double MPS, double wheelDiameter, double gearRatio) {
         return (60 * MPS * gearRatio) / (0.0254 * wheelDiameter * Math.PI); // 0.0254 goes from inches to meters
     }
+
+    public static double rpmToMetersPerSec(double rpm, double wheelDiameter, double gearRatio) {
+        return (METERS_PER_INCH * Math.PI * rpm * wheelDiameter) / (60 * gearRatio);
+    }
+
+    public static double rotationsToMeters(double gearRatio, double wheelDiameter, double encoderPosition) {
+        return (METERS_PER_INCH * Math.PI * encoderPosition * wheelDiameter) / (gearRatio);
+    }
+
+    /**
+     * Converts from inches to meters.
+     * @param inches measurement in inches
+     * @return measurement in meters
+     */
+    public static double inchesToMeters(double inches) {
+        return inches * METERS_PER_INCH;
+    }
 }

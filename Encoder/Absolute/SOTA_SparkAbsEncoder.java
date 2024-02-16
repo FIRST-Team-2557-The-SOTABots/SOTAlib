@@ -27,7 +27,7 @@ public class SOTA_SparkAbsEncoder implements SOTA_AbsoulteEncoder {
             output = mEncoder.getPosition() - mOffset;
         }
 
-        return Conversions.radsToRots(output);
+        return output;
     }
 
     @Override

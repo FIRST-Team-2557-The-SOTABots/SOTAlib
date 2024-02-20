@@ -12,7 +12,7 @@ import SOTAlib.Config.MotorControllerConfig;
 public class SOTA_FalconFX implements SOTA_MotorController {
     private double kNativeCountsPerRevolution = 2048;
     private final TalonFX mMotor;
-    private Optional<MotorPositionLimits> mMotorLimits; // TODO: make optional
+    private Optional<MotorPositionLimits> mMotorLimits; 
     private Supplier<NullConfigException> mNullExceptionSupplier;
 
     public SOTA_FalconFX(MotorControllerConfig config, TalonFX motor) throws NullConfigException {
@@ -106,7 +106,7 @@ public class SOTA_FalconFX implements SOTA_MotorController {
     /**
      * Converts from native encoder velocity to RPM
      * 
-     * @deprecated CTRE switched to revolutions
+     * @Deprecated CTRE switched to revolutions
      * @param ticks native encoder ticks
      * @return velocity in rotations per minute
      */
@@ -117,7 +117,7 @@ public class SOTA_FalconFX implements SOTA_MotorController {
     /**
      * Converts from native encoder position to revolutions
      * 
-     * @deprecated CTRE switched to revolutions
+     * @Deprecated CTRE switched to revolutions
      * @param ticks native encoder ticks
      * @return position in rotations
      */

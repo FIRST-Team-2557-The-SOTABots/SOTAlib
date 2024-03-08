@@ -1,5 +1,7 @@
 package SOTAlib.MotorController;
 
+import com.revrobotics.AbsoluteEncoder;
+
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 
 public interface SOTA_MotorController extends MotorController {
@@ -115,5 +117,54 @@ public interface SOTA_MotorController extends MotorController {
      * @param position desired encoder position in rotations
      */
     void setEncoderPosition(double position);
+    
+   /**
+     * only avalible for sparkmax
+     * @param p the P for the sparkmax PID 
+     */
+    void setPIDP(double p);
+
+    /**
+     * only avalible for sparkmax
+     * @param i the I for the sparkmax PID
+     */
+    void setPIDI(double i);
+
+    /**
+     * only avalible for sparkmax
+     * @param d the D for the sparkmax PID
+     */
+    void setPIDD(double d);
+
+    /**
+     * only avalible for sparkmax
+     * @param zone the izone for the sparkmax PID
+     */
+    void setPIDIZone(double zone);
+
+    /**
+     * only avalible for sparkmax
+     * @param minOutput the min output for the sparkmax PID
+     * @param maxOutput the max output for the sparkmax PID
+     */
+    void setPIDOutputRange(double minOutput, double maxOutput);
+
+    /**
+     * only avalible for sparkmax
+     * @param setPoint the setpoint for the sparkmax PID to go to
+     */
+    void setPIDSetPoint(double setPoint);
+
+    /**
+     * only avalible for sparkmax
+     * Lets the sparkmax PID   
+     */
+    void setPIDPositionWrapping(boolean positionWrapping);
+    
+    /**
+     * only avalible for sparkmax
+     * @param mAbsoluteEncoder sets a absolute encoder for the PID
+     */
+    void setPIDAbsoluteEncoder(AbsoluteEncoder mAbsoluteEncoder);
 
 }

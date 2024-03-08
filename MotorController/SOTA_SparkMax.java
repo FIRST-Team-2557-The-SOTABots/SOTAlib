@@ -4,13 +4,18 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
+import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.SparkPIDController;
 
 import SOTAlib.Config.MotorControllerConfig;
 
 public class SOTA_SparkMax implements SOTA_MotorController {
     private final CANSparkMax mMotor;
-    private final SparlPIDController mPID;
+    private SparkPIDController mPID;
+    private AbsoluteEncoder mAbsoluteEncoder;
     private Optional<MotorPositionLimits> mMotorLimits;
     private Supplier<NullConfigException> mNullExceptionSupplier;
 
@@ -25,6 +30,7 @@ public class SOTA_SparkMax implements SOTA_MotorController {
         }
         this.mMotor = motor;
         this.mMotorLimits = Optional.ofNullable(limits);
+        SparkPIDController mPID = mMotor.getPIDController();
 
     }
 
@@ -116,16 +122,13 @@ public class SOTA_SparkMax implements SOTA_MotorController {
 
     }
 
-    public void getSparkMaxPID(){
-        mPID = mMotor.getPIDController();
-    }
 
     public void setPIDP(double p){
         mPID.setP(p);
     }
 
     public void setPIDI(double i){
-        mPID.set(i);
+        mPID.setI(i);
     }
 
     public void setPIDD(double d){
@@ -148,8 +151,9 @@ public class SOTA_SparkMax implements SOTA_MotorController {
         mPID.setPositionPIDWrappingEnabled(positionWrapping);
     }
     
-    public void setPIDAbsoluteEncoder(AbsoluteEncoder absoluteEncoder){
-        mPID.setFeedbackDevice(absoluteEncoder);
+    public void setPIDAbsoluteEncoder(AbsoluteEncoder mAbsoluteEncoder){
+        this.mAbsoluteEncoder = mAbsoluteEncoder;
+        mPID.setFeedbackDevice(mAbsoluteEncoder);
     }
 
     @Override

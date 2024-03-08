@@ -10,6 +10,7 @@ import SOTAlib.Config.MotorControllerConfig;
 
 public class SOTA_SparkMax implements SOTA_MotorController {
     private final CANSparkMax mMotor;
+    private final SparlPIDController mPID;
     private Optional<MotorPositionLimits> mMotorLimits;
     private Supplier<NullConfigException> mNullExceptionSupplier;
 
@@ -113,6 +114,42 @@ public class SOTA_SparkMax implements SOTA_MotorController {
     public void stopMotor() {
         mMotor.stopMotor();
 
+    }
+
+    public void getSparkMaxPID(){
+        mPID = mMotor.getPIDController();
+    }
+
+    public void setPIDP(double p){
+        mPID.setP(p);
+    }
+
+    public void setPIDI(double i){
+        mPID.set(i);
+    }
+
+    public void setPIDD(double d){
+        mPID.setD(d);
+    }
+
+    public void setPIDIZone(double zone){
+        mPID.setIZone(zone);
+    }
+
+    public void setPIDOutputRange(double minOutput, double maxOutput){
+        mPID.setOutputRange(minOutput, maxOutput);
+    }
+
+    public void setPIDSetPoint(double setPoint){
+        mPID.setReference(setPoint, ControlType.kPosition);
+    }
+
+    public void setPIDPositionWrapping(boolean positionWrapping){
+        mPID.setPositionPIDWrappingEnabled(positionWrapping);
+    }
+    
+    public void setPIDAbsoluteEncoder(AbsoluteEncoder absoluteEncoder){
+        mPID.setFeedbackDevice(absoluteEncoder);
     }
 
     @Override

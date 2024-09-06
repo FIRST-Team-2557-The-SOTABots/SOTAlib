@@ -14,16 +14,37 @@ import SOTAlib.MotorController.NullConfigException;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Encoder;
 
-/** Add your docs here. */
+/**
+ * Factory class for creating various encoder types based on configuration settings.
+ *
+ * <p>This factory provides methods to generate different types of encoders, including relative encoders (QuadratureEncoder)
+ * and absolute encoders (SOTA_AbsoulteEncoder, SOTA_AnalogEncoder, SOTA_DutyCycle). It uses the provided `EncoderConfig` object
+ * to configure the encoders with appropriate settings like port numbers, encoding types, and inversion.
+ */
 public class EncoderFactory {
+    // TODO: Make all of these consistent with the rest of the factories
+
+    /**
+     * Generates a relative encoder based on the provided configuration.
+     *
+     * @param config The configuration object for the relative encoder.
+     * @return A new instance of `SOTA_RelativeEncoder`.
+     * @throws NullConfigException If the provided configuration is null.
+     */
     public static SOTA_RelativeEncoder generateRelativeEncoder(EncoderConfig config) throws NullConfigException {
         return generateQuadratureDelegate(config);
     }
 
-    // TODO: Make all of these consistent with the rest of the factories
+    /**
+     * Generates an absolute encoder based on the provided configuration.
+     *
+     * @param config The configuration object for the absolute encoder.
+     * @return A new instance of `SOTA_AbsoulteEncoder`.
+     * @throws Exception If the provided configuration is null or the specified encoder type is invalid.
+     */
     public static SOTA_AbsoulteEncoder generateAbsoluteEncoder(EncoderConfig config) throws Exception {
         if (config == null) {
-            throw new NullConfigException("EncoderFacotry: Null Config");
+            throw new NullConfigException("EncoderFactory: Null Config");
         }
         switch (config.getEncoderType()) {
             case "DUTYCYCLE":
@@ -32,7 +53,7 @@ public class EncoderFactory {
                 return new SOTA_AnalogEncoder(config);
             default:
                 throw new Exception(
-                        "EncoderFactory: generateAbsoluteEncoder invaild encoder type, only accepts 'DUTYCYCLE' and 'ANALOG'");
+                        "EncoderFactory: generateAbsoluteEncoder invalid encoder type, only accepts 'DUTYCYCLE' and 'ANALOG'");
         }
     }
 

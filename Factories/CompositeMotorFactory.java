@@ -20,9 +20,20 @@ import SOTAlib.MotorController.SOTA_CompositeMotorImplementation;
 import SOTAlib.MotorController.SOTA_MotorController;
 import SOTAlib.MotorController.SOTA_SparkMax;
 
+/**
+ * Creates SOTA_CompositeMotor objects
+ */
 public class CompositeMotorFactory {
     private static final String kSparkMax = "SPARKMAX";
 
+    /**
+     * Generates a SOTA_CompositeMotor.
+     * !!! DOES NOT WORK WITH A RELATIVE ENCODER !!! ONLY GENERATES ABSOLUTE ENCODERS !!! todo: fix this
+     * @param inputConfig CompositeMotorConfig to generate CompositeMotor based on
+     * @return SOTA_CompositeMotor object @see SOTA_CompositeMotor
+     * @throws IllegalMotorModel Throws if model of motor is not supported
+     * @throws Exception Either a NullConfigException or an invalid motor type (BRUSHED vs BRUSHLESS)
+     */
     public SOTA_CompositeMotor generateCompositeMotor(CompositeMotorConfig inputConfig)
             throws IllegalMotorModel, Exception {
         Optional<CompositeMotorConfig> config = Optional.ofNullable(inputConfig);

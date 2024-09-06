@@ -32,7 +32,7 @@ public class EncoderFactory {
                 return new SOTA_AnalogEncoder(config);
             default:
                 throw new Exception(
-                        "EncoderFactory: generateAbsoluteEncoder invaild encoder type, only accepts 'DUTYCYCLE', 'ANALOG', and 'CANCODER'");
+                        "EncoderFactory: generateAbsoluteEncoder invaild encoder type, only accepts 'DUTYCYCLE' and 'ANALOG'");
         }
     }
 

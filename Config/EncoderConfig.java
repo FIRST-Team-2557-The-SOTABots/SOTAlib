@@ -73,6 +73,17 @@ public class EncoderConfig {
      */
     private String encoderType;
 
+    private CANBusConfig canBusConfig = new CANBusConfig(); // defaults to "rio"
+
+    public CANBusConfig getCanBusConfig() {
+        return this.canBusConfig;
+    }
+
+    public void setCanBusConfig(CANBusConfig canBusConfig) {
+        this.canBusConfig = canBusConfig;
+    }
+
+
     public int getPort() {
         return port;
     }
@@ -108,4 +119,42 @@ public class EncoderConfig {
     public EncodingType getEncodingType() {
         return encodingType;
     }
+
+        // --- Add these missing setters to clean up EncoderConfig errors ---
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public void setEncoderType(String encoderType) {
+        this.encoderType = encoderType;
+    }
+
+    public void setEncoderOffset(Double encoderOffset) {
+        this.encoderOffset = encoderOffset;
+    }
+
+    public void setIsInverted(boolean isInverted) {
+        this.isInverted = isInverted;
+    }
+
+    public void setCountsPerRevolution(int countsPerRevolution) {
+        this.countsPerRevolution = countsPerRevolution;
+    }
+
+    public void setSourceA(int sourceA) {
+        this.sourceA = sourceA;
+    }
+
+    public void setSourceB(int sourceB) {
+        this.sourceB = sourceB;
+    }
+
+    public void setSourceI(Integer sourceI) {
+        this.sourceI = sourceI;
+    }
+
+    public void setEncodingType(EncodingType encodingType) {
+        this.encodingType = encodingType;
+    }
+
 }

@@ -4,7 +4,7 @@ import com.revrobotics.AbsoluteEncoder;
 
 import SOTAlib.Math.Conversions;
 
-public class SOTA_SparkAbsEncoder implements SOTA_AbsoulteEncoder {
+public class SOTA_SparkAbsEncoder implements SOTA_AbsoluteEncoder {
 
     private AbsoluteEncoder mEncoder;
     private int sparkCanId;

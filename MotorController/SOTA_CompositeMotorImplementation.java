@@ -3,13 +3,13 @@ package SOTAlib.MotorController;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import SOTAlib.Encoder.Absolute.SOTA_AbsoulteEncoder;
+import SOTAlib.Encoder.Absolute.SOTA_AbsoluteEncoder;
 import SOTAlib.Encoder.Relative.SOTA_RelativeEncoder;
 
 public class SOTA_CompositeMotorImplementation implements SOTA_CompositeMotor {
 
     private SOTA_MotorController mMotor;
-    private Optional<SOTA_AbsoulteEncoder> mAbsEncoder;
+    private Optional<SOTA_AbsoluteEncoder> mAbsEncoder;
     private Optional<SOTA_RelativeEncoder> mRelEncoder;
     private Supplier<NullConfigException> mNullExceptionSupplier;
 
@@ -17,11 +17,11 @@ public class SOTA_CompositeMotorImplementation implements SOTA_CompositeMotor {
         this(motor, null, relEncoder);
     }
 
-    public SOTA_CompositeMotorImplementation(SOTA_MotorController motor, SOTA_AbsoulteEncoder absEncoder) {
+    public SOTA_CompositeMotorImplementation(SOTA_MotorController motor, SOTA_AbsoluteEncoder absEncoder) {
         this(motor, absEncoder, null);
     }
 
-    public SOTA_CompositeMotorImplementation(SOTA_MotorController motor, SOTA_AbsoulteEncoder absEncoder,
+    public SOTA_CompositeMotorImplementation(SOTA_MotorController motor, SOTA_AbsoluteEncoder absEncoder,
             SOTA_RelativeEncoder relEncoder) {
         this.mMotor = motor;
         this.mAbsEncoder = Optional.ofNullable(absEncoder);
@@ -34,7 +34,7 @@ public class SOTA_CompositeMotorImplementation implements SOTA_CompositeMotor {
     }
 
     @Override
-    public SOTA_AbsoulteEncoder getAbsEncoder() throws NullConfigException {
+    public SOTA_AbsoluteEncoder getAbsEncoder() throws NullConfigException {
         return mAbsEncoder.orElseThrow(mNullExceptionSupplier);
     }
 

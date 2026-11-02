@@ -7,7 +7,7 @@ import SOTAlib.MotorController.NullConfigException;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.AnalogInput;
 
-public class SOTA_AnalogEncoder implements SOTA_AbsoulteEncoder {
+public class SOTA_AnalogEncoder implements SOTA_AbsoluteEncoder {
     private AnalogInput mEncoder;
     private double mOffset; // IN VOLTS IF YOU DO IT IN ENCODER POSITIONS IT WILL BE WRONG!!!
     private final double MAX_VOLTAGE = 5.0;

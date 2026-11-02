@@ -1,6 +1,6 @@
 package SOTAlib.MotorController;
 
-import SOTAlib.Encoder.Absolute.SOTA_AbsoulteEncoder;
+import SOTAlib.Encoder.Absolute.SOTA_AbsoluteEncoder;
 import SOTAlib.Encoder.Relative.SOTA_RelativeEncoder;
 
 public interface SOTA_CompositeMotor {
@@ -16,7 +16,7 @@ public interface SOTA_CompositeMotor {
      * @return SOTA_AbsoluteEncoder Object
      * @throws NullConfigException
      */
-    public SOTA_AbsoulteEncoder getAbsEncoder() throws NullConfigException;
+    public SOTA_AbsoluteEncoder getAbsEncoder() throws NullConfigException;
 
     /**
      * 

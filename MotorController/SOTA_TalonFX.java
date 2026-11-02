@@ -4,25 +4,31 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import SOTAlib.Config.MotorControllerConfig;
 
-public class SOTA_FalconFX implements SOTA_MotorController {
+/**
+ * Universal Wrapper for CTRE Phoenix 6 devices including 
+ * Falcon 500, Kraken X60, and Kraken X44 motor controllers.
+ */
+public class SOTA_TalonFX implements SOTA_MotorController {
     private double kNativeCountsPerRevolution = 2048;
     private final TalonFX mMotor;
     private Optional<MotorPositionLimits> mMotorLimits; 
-    private Supplier<NullConfigException> mNullExceptionSupplier;
+    private Supplier<NullConfigException> mNullExceptionSupplier = () -> new NullConfigException("SOTA_TalonFX: null limit reference");
 
-    public SOTA_FalconFX(MotorControllerConfig config, TalonFX motor) throws NullConfigException {
+    public SOTA_TalonFX(MotorControllerConfig config, TalonFX motor) throws NullConfigException {
         this(config, motor, null);
     }
 
-    public SOTA_FalconFX(MotorControllerConfig config, TalonFX falcon, MotorPositionLimits limits)
+    public SOTA_TalonFX(MotorControllerConfig config, TalonFX falcon, MotorPositionLimits limits)
             throws NullConfigException {
         if (config == null)
-            throw new NullConfigException("SOTA_FalconFX: config not created");
+            throw new NullConfigException("SOTA_TalonFX: config not created");
         this.mMotorLimits = Optional.ofNullable(limits);
         this.mMotor = falcon;
     }
@@ -40,16 +46,34 @@ public class SOTA_FalconFX implements SOTA_MotorController {
         mMotor.set(speed);
     }
 
+    @Override
+    public void setVoltage(double voltage) {
+        if (mMotorLimits.isPresent()) {
+            if (voltage < 0) {
+                if (mMotorLimits.get().getLowerLimit() > getEncoderPosition())
+                    voltage = 0;
+            } else if (voltage > 0) {
+                if (mMotorLimits.get().getUpperLimit() < getEncoderPosition())
+                    voltage = 0;
+            }
+        }
+        mMotor.setVoltage(voltage);
+    }
+
     public double get() {
         return mMotor.get();
     }
 
     public void setInverted(boolean isInverted) {
-        mMotor.setInverted(isInverted);
+        MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
+        outputConfigs.Inverted = isInverted 
+            ? InvertedValue.Clockwise_Positive 
+            : InvertedValue.CounterClockwise_Positive;
+        mMotor.getConfigurator().apply(outputConfigs);
     }
 
     public boolean getInverted() {
-        return mMotor.getInverted();
+        return mMotor.getAppliedRotorPolarity().getValue() == com.ctre.phoenix6.signals.AppliedRotorPolarityValue.PositiveIsClockwise;
     }
 
     public void setNeutralOperation(NeutralOperation neutralOperation) {
@@ -61,7 +85,6 @@ public class SOTA_FalconFX implements SOTA_MotorController {
                 mMotor.setNeutralMode(NeutralModeValue.Coast);
                 break;
         }
-
     }
 
     public double getEncoderVelocity() {
@@ -104,6 +127,24 @@ public class SOTA_FalconFX implements SOTA_MotorController {
     }
 
     /**
+     * Commands the TalonFX onboard closed-loop controller towards a reference target.
+     * Maps to Phoenix 6 ControlRequests seamlessly.
+     * 
+     * @param reference The target value (Rotations for Position, RPS for Velocity)
+     * @param type The control mode string ("POSITION" or "VELOCITY")
+     */
+    public void setReference(double reference, String type) {
+        if (type.equalsIgnoreCase("POSITION")) {
+            var request = new com.ctre.phoenix6.controls.PositionVoltage(reference);
+            mMotor.setControl(request);
+        } else if (type.equalsIgnoreCase("VELOCITY")) {
+            var request = new com.ctre.phoenix6.controls.VelocityVoltage(reference);
+            mMotor.setControl(request);
+        }
+    }
+
+
+    /**
      * Converts from native encoder velocity to RPM
      * 
      * @Deprecated CTRE switched to revolutions
@@ -137,20 +178,12 @@ public class SOTA_FalconFX implements SOTA_MotorController {
 
     @Override
     public boolean atUpperLimit() throws NullConfigException {
-        if (getLimitState() == MotorPositionLimitStates.AT_UPPER_LIMIT) {
-            return true;
-        } else {
-            return false;
-        }
+        return getLimitState() == MotorPositionLimitStates.AT_UPPER_LIMIT;
     }
 
     @Override
     public boolean atLowerLimit() throws NullConfigException {
-        if (getLimitState() == MotorPositionLimitStates.AT_LOWER_LIMIT) {
-            return true;
-        } else {
-            return false;
-        }
+        return getLimitState() == MotorPositionLimitStates.AT_LOWER_LIMIT;
     }
 
     @Override
@@ -169,7 +202,7 @@ public class SOTA_FalconFX implements SOTA_MotorController {
                 return MotorPositionLimitStates.IN_RANGE;
             }
         } else {
-            throw new NullConfigException("SOTA_FalconFX: no limits");
+            throw new NullConfigException("SOTA_TalonFX: no position limits found");
         }
     }
 
@@ -181,7 +214,7 @@ public class SOTA_FalconFX implements SOTA_MotorController {
     @Override
     public NeutralOperation getNeutralOperation() throws NullNeutralOperationException {
         throw new NullNeutralOperationException(
-                "SOTA_FalconFX: Ctre didn't implement getting the Neutral Operation from the motor. If you really need to get the Neutral Operation keep track of it in a seperate variable or get build to use a different motor. If you actually get this error email me howardwalz@gmail.com, good luck! :)");
+                "SOTA_TalonFX: Ctre didn't implement getting the Neutral Operation from the motor.");
     }
 
     @Override

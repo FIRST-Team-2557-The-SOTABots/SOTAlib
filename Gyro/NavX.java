@@ -4,7 +4,7 @@
 
 package SOTAlib.Gyro;
 
-import com.kauailabs.navx.frc.AHRS;
+import com.studica.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -13,7 +13,7 @@ public class NavX implements SOTA_Gyro {
 
 /**
  * Creates a new NavX
- * @param navX AHRS navX to be created
+ * @param navX Studica Navx object
  */
   public NavX(AHRS navX) {
     this.mNavX = navX;

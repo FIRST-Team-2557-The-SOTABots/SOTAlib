@@ -3,22 +3,23 @@ package SOTAlib.MotorController;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkFlex;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkFlexConfig;
+import com.revrobotics.spark.SparkFlex;
 
 import SOTAlib.Config.MotorControllerConfig;
 
 public class SOTA_SparkFlex implements SOTA_MotorController {
 
-    private final CANSparkFlex mMotor;
+    private final SparkFlex mMotor;
     private Optional<MotorPositionLimits> mMotorLimits;
     private Supplier<NullConfigException> mNullExceptionSupplier;
 
-    public SOTA_SparkFlex(MotorControllerConfig config, CANSparkFlex motor) throws NullConfigException {
+    public SOTA_SparkFlex(MotorControllerConfig config, SparkFlex motor) throws NullConfigException {
         this(config, motor, null);
     }
 
-    public SOTA_SparkFlex(MotorControllerConfig config, CANSparkFlex motor, MotorPositionLimits limits)
+    public SOTA_SparkFlex(MotorControllerConfig config, SparkFlex motor, MotorPositionLimits limits)
             throws NullConfigException {
         if (config == null) {
             throw new NullConfigException("SOTA_SparkFlex: Config not created properly");
@@ -70,14 +71,16 @@ public class SOTA_SparkFlex implements SOTA_MotorController {
 
     @Override
     public void setNeutralOperation(NeutralOperation neutralOperation) {
+        SparkFlexConfig config = new SparkFlexConfig();
         switch (neutralOperation) {
             case kBrake:
-                mMotor.setIdleMode(IdleMode.kBrake);
+                config.idleMode(IdleMode.kBrake);
                 break;
             case kCoast:
-                mMotor.setIdleMode(IdleMode.kCoast);
+                config.idleMode(IdleMode.kCoast);
                 break;
         }
+        mMotor.configure(config, SparkFlex.ResetMode.kNoResetSafeParameters, SparkFlex.PersistMode.kNoPersistParameters);
     }
 
     @Override
@@ -102,7 +105,9 @@ public class SOTA_SparkFlex implements SOTA_MotorController {
 
     @Override
     public void setCurrentLimit(int amps) {
-        mMotor.setSmartCurrentLimit(amps);
+        SparkFlexConfig config = new SparkFlexConfig();
+        config.smartCurrentLimit(amps);
+        mMotor.configure(config, SparkFlex.ResetMode.kNoResetSafeParameters, SparkFlex.PersistMode.kNoPersistParameters);
     }
 
     @Override
@@ -170,13 +175,13 @@ public class SOTA_SparkFlex implements SOTA_MotorController {
 
     @Override
     public NeutralOperation getNeutralOperation() throws NullNeutralOperationException {
-        switch (mMotor.getIdleMode()) {
+        switch (mMotor.configAccessor.getIdleMode()) {
             case kBrake:
                 return NeutralOperation.kBrake;
             case kCoast:
                 return NeutralOperation.kCoast;
             default:
-                throw new NullNeutralOperationException("SOTA_SparkFlex: no idle mode returned by SparkMax");
+                throw new NullNeutralOperationException("SOTA_SparkFlex: no idle mode returned by SparkFlex");
         }
     }
 

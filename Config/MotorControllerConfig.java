@@ -22,7 +22,7 @@ public class MotorControllerConfig  {
      * "SparkMax" for REV SparkMax
      * "SparkFlex" for REV SparkFlex
      * "Talon" for CTRE TalonSRX
-     * "Falcon" for Talon FX motors (Falcon, Kracken)
+     * "Falcon" for Talon FX motors (Falcon, Kraken)
      */
     private String motorModel;
 
@@ -55,6 +55,18 @@ public class MotorControllerConfig  {
      */
     private int currentLimit;
 
+    // Add can bus configuration
+    private CANBusConfig canBusConfig = new CANBusConfig(); // Defaults to "rio"
+
+    public CANBusConfig getCanBusConfig() {
+        return this.canBusConfig;
+    }
+
+    public void setCanBusConfig(CANBusConfig canBusConfig) {
+        this.canBusConfig = canBusConfig;
+    }
+
+
     public boolean getIsInverted() {
         return isInverted;
     }
@@ -86,5 +98,31 @@ public class MotorControllerConfig  {
     public String getMotorModel() {
         return motorModel;
     }
+
+        // --- Add these missing setters to clean up MotorControllerConfig errors ---
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public void setMotorModel(String motorModel) {
+        this.motorModel = motorModel;
+    }
+
+    public void setMotorType(String motorType) {
+        this.motorType = motorType;
+    }
+
+    public void setIsInverted(boolean isInverted) {
+        this.isInverted = isInverted;
+    }
+
+    public void setNeutralOperation(String neutralOperation) {
+        this.neutralOperation = neutralOperation;
+    }
+
+    public void setCurrentLimit(int currentLimit) {
+        this.currentLimit = currentLimit;
+    }
+
     
 }

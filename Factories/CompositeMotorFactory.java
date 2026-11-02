@@ -2,16 +2,16 @@ package SOTAlib.Factories;
 
 import java.util.Optional;
 
-import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.SparkAbsoluteEncoder.Type;
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.spark.SparkAbsoluteEncoder;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
 
 import SOTAlib.Config.CompositeMotorConfig;
 import SOTAlib.Config.EncoderConfig;
 import SOTAlib.Config.MotorControllerConfig;
-import SOTAlib.Encoder.Absolute.SOTA_AbsoulteEncoder;
+import SOTAlib.Encoder.Absolute.SOTA_AbsoluteEncoder;
 import SOTAlib.Encoder.Absolute.SOTA_SparkAbsEncoder;
 import SOTAlib.MotorController.MotorPositionLimits;
 import SOTAlib.MotorController.NullConfigException;
@@ -68,19 +68,28 @@ public class CompositeMotorFactory {
                 throw new IllegalArgumentException("Illegal motor type");
         }
 
-        CANSparkMax mMotor;
-        mMotor = new CANSparkMax(motorConfig.getPort(), motorType);
-        mMotor.setInverted(motorConfig.getIsInverted());
+        SparkMax mMotor = new SparkMax(motorConfig.getPort(), motorType);
+        
+        SparkMaxConfig sparkConfig = new SparkMaxConfig();
+        
+        sparkConfig.inverted(motorConfig.getIsInverted());
+        
         if (motorConfig.getNeutralOperation().equals("BRAKE")) {
-            mMotor.setIdleMode(IdleMode.kBrake);
+            sparkConfig.idleMode(IdleMode.kBrake);
         } else if (motorConfig.getNeutralOperation().equals("COAST")) {
-            mMotor.setIdleMode(IdleMode.kCoast);
+            sparkConfig.idleMode(IdleMode.kCoast);
         }
+        
         if (motorConfig.getCurrentLimit() != -1) {
-            mMotor.setSmartCurrentLimit(motorConfig.getCurrentLimit());
+            sparkConfig.smartCurrentLimit(motorConfig.getCurrentLimit());
         } else {
             System.out.println("SOTA_SparkMax: INFO: No current limit set");
         }
+
+        sparkConfig.absoluteEncoder.inverted(encoderConfig.getIsInverted());
+        sparkConfig.absoluteEncoder.zeroOffset(encoderConfig.getEncoderOffset());
+
+        mMotor.configure(sparkConfig, SparkMax.ResetMode.kResetSafeParameters, SparkMax.PersistMode.kPersistParameters);
 
         MotorPositionLimits limits = null;
         try {
@@ -89,19 +98,17 @@ public class CompositeMotorFactory {
                     motorConfig.getMotorLimitsConfig().getFinalLimits());
         } catch (NullPointerException e) {
             System.out.println("SOTA_SparkMax: INFO: no motor limits");
-
         }
+
         if (Optional.ofNullable(limits).isPresent()) {
             motorController = new SOTA_SparkMax(motorConfig, mMotor, limits);
         } else {
             motorController = new SOTA_SparkMax(motorConfig, mMotor);
         }
 
-        SOTA_AbsoulteEncoder absoulteEncoder;
+        SparkAbsoluteEncoder mEncoder = mMotor.getAbsoluteEncoder();
 
-        AbsoluteEncoder mEncoder = mMotor.getAbsoluteEncoder(Type.kDutyCycle);
-
-        absoulteEncoder = new SOTA_SparkAbsEncoder(mEncoder, mMotor.getDeviceId(), encoderConfig.getIsInverted(),
+        SOTA_AbsoluteEncoder absoulteEncoder = new SOTA_SparkAbsEncoder(mEncoder, mMotor.getDeviceId(), encoderConfig.getIsInverted(),
                 encoderConfig.getEncoderOffset());
 
         return new SOTA_CompositeMotorImplementation(motorController, absoulteEncoder);

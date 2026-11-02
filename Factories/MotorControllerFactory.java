@@ -7,15 +7,17 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkFlex;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkFlexConfig;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkFlex;
 
 import SOTAlib.Config.MotorControllerConfig;
 import SOTAlib.MotorController.MotorPositionLimits;
 import SOTAlib.MotorController.NullConfigException;
-import SOTAlib.MotorController.SOTA_FalconFX;
+import SOTAlib.MotorController.SOTA_TalonFX;
 import SOTAlib.MotorController.SOTA_MotorController;
 import SOTAlib.MotorController.SOTA_SparkFlex;
 import SOTAlib.MotorController.SOTA_SparkMax;
@@ -23,14 +25,6 @@ import SOTAlib.MotorController.SOTA_TalonSRX;
 
 public class MotorControllerFactory {
 
-    /**
-     * Generates a new SOTA_MotorController
-     * 
-     * @param config The MotorControllerConfig that will be used for the new motor.
-     * @return Returns a SOTA_MotorController with the config as specified.
-     * @throws IllegalMotorModel   Throws if the model of the motor is invalid
-     * @throws NullConfigException Throws if config is null
-     */
     public static SOTA_MotorController generateMotorController(MotorControllerConfig config)
             throws IllegalMotorModel, NullConfigException {
         switch (config.getMotorModel()) {
@@ -47,29 +41,32 @@ public class MotorControllerFactory {
                 "Illegal Motor Model, check config has valid motor types 'Falcon', 'SparkMax', or 'Talon'");
     }
 
-    /**
-     * Generates a Falcon motor as a SOTA_MotorController
-     * 
-     * @param config The MotorContorllerConfig used to generate the settings of the
-     *               Falcon
-     * @return Returns a SOTA_MotorController of a Falcon motor
-     * @throws NullConfigException Throws if config is null
-     */
-    private static SOTA_MotorController generateFalconDelegate(MotorControllerConfig config)
+        private static SOTA_MotorController generateFalconDelegate(MotorControllerConfig config)
             throws NullConfigException {
         if (config == null)
-            throw new NullConfigException("SOTA_FalconFX: config not created");
+            throw new NullConfigException("SOTA_TalonFX: config not created");
 
-        TalonFX falcon = new TalonFX(config.getPort());
+        // Extract the network bus target name dynamically from the config block
+        String busName = config.getCanBusConfig().getBusName();
+        
+        // Instantiate the TalonFX on the targeted CANivore or RIO bus cleanly!
+        TalonFX falcon = new TalonFX(config.getPort(), busName);
 
-        Optional.ofNullable(config.getIsInverted()).ifPresent((invert) -> falcon.setInverted(invert));
+        // Standard Phoenix 6 setup blocks
+        com.ctre.phoenix6.configs.MotorOutputConfigs outputConfigs = new com.ctre.phoenix6.configs.MotorOutputConfigs();
+        outputConfigs.Inverted = config.getIsInverted() 
+            ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive 
+            : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
+        falcon.getConfigurator().apply(outputConfigs);
 
         Optional.ofNullable(config.getNeutralOperation()).ifPresent((neutralOp) -> {
             switch (neutralOp) {
                 case "BRAKE":
                     falcon.setNeutralMode(NeutralModeValue.Brake);
+                    break;
                 case "COAST":
                     falcon.setNeutralMode(NeutralModeValue.Coast);
+                    break;
             }
         });
 
@@ -81,27 +78,20 @@ public class MotorControllerFactory {
         }
 
         MotorPositionLimits limits;
-
         try {
             limits = new MotorPositionLimits(config.getMotorLimitsConfig().getLowerLimit(),
                     config.getMotorLimitsConfig().getUpperLimit(), config.getMotorLimitsConfig().getFinalLimits());
-
         } catch (NullPointerException e) {
-            System.out.println("SOTA_FalconFX: INFO: no motor limits");
-            return new SOTA_FalconFX(config, falcon);
+            System.out.println("SOTA_TalonFX: INFO: no motor limits");
+            return new SOTA_TalonFX(config, falcon);
         }
 
-        return new SOTA_FalconFX(config, falcon, limits);
+        return new SOTA_TalonFX(config, falcon, limits);
     }
 
-    /**
-     * Generates a SparkMax motor as a SOTA_MotorController
-     * 
-     * @param config The MotorContorllerConfig used to generate the settings of the
-     *               SparkMax
-     * @return Returns a SOTA_MotorController of a SparkMax motor
-     * @throws NullConfigException Throws if config is null
-     */
+
+
+
     private static SOTA_MotorController generateSparkMaxDelegate(MotorControllerConfig config)
             throws NullConfigException {
 
@@ -117,23 +107,25 @@ public class MotorControllerFactory {
                 throw new IllegalArgumentException("Illegal motor type");
         }
 
-        CANSparkMax mMotor;
-        mMotor = new CANSparkMax(config.getPort(), motorType);
-        mMotor.restoreFactoryDefaults();
-        mMotor.setInverted(config.getIsInverted());
+        SparkMax mMotor = new SparkMax(config.getPort(), motorType);
+        SparkMaxConfig sparkConfig = new SparkMaxConfig();
+        
+        sparkConfig.inverted(config.getIsInverted());
         if (Optional.ofNullable(config.getNeutralOperation()).isPresent()) {
             if (config.getNeutralOperation().equals("BRAKE")) {
-                mMotor.setIdleMode(IdleMode.kBrake);
+                sparkConfig.idleMode(IdleMode.kBrake);
             } else if (config.getNeutralOperation().equals("COAST")) {
-                mMotor.setIdleMode(IdleMode.kCoast);
+                sparkConfig.idleMode(IdleMode.kCoast);
             }
 
             if (config.getCurrentLimit() != -1) {
-                mMotor.setSmartCurrentLimit(config.getCurrentLimit());
+                sparkConfig.smartCurrentLimit(config.getCurrentLimit());
             } else {
                 System.out.println("SOTA_SparkMax: INFO: No current limit set");
             }
         }
+
+        mMotor.configure(sparkConfig, SparkMax.ResetMode.kResetSafeParameters, SparkMax.PersistMode.kPersistParameters);
 
         MotorPositionLimits limits;
         try {
@@ -147,14 +139,6 @@ public class MotorControllerFactory {
         return new SOTA_SparkMax(config, mMotor, limits);
     }
 
-    /**
-     * Generates a SparkFlex motor as a SOTA_MotorController
-     * 
-     * @param config The MotorContorllerConfig used to generate the settings of the
-     *               SparkFlex
-     * @return Returns a SOTA_MotorController of a SparkFlex motor
-     * @throws NullConfigException Throws if config is null
-     */
     private static SOTA_MotorController generateSparkFlexDelegate(MotorControllerConfig config)
             throws NullConfigException {
         MotorType motorType;
@@ -169,23 +153,25 @@ public class MotorControllerFactory {
                 throw new IllegalArgumentException("Illegal motor type");
         }
 
-        CANSparkFlex mMotor;
-        mMotor = new CANSparkFlex(config.getPort(), motorType);
-        mMotor.restoreFactoryDefaults();
-        mMotor.setInverted(config.getIsInverted());
+        SparkFlex mMotor = new SparkFlex(config.getPort(), motorType);
+        SparkFlexConfig sparkConfig = new SparkFlexConfig();
+        
+        sparkConfig.inverted(config.getIsInverted());
         if (Optional.ofNullable(config.getNeutralOperation()).isPresent()) {
             if (config.getNeutralOperation().equals("BRAKE")) {
-                mMotor.setIdleMode(IdleMode.kBrake);
+                sparkConfig.idleMode(IdleMode.kBrake);
             } else if (config.getNeutralOperation().equals("COAST")) {
-                mMotor.setIdleMode(IdleMode.kCoast);
+                sparkConfig.idleMode(IdleMode.kCoast);
             }
 
             if (config.getCurrentLimit() != -1) {
-                mMotor.setSmartCurrentLimit(config.getCurrentLimit());
+                sparkConfig.smartCurrentLimit(config.getCurrentLimit());
             } else {
                 System.out.println("SOTA_SparkFlex: INFO: No current limit set");
             }
         }
+
+        mMotor.configure(sparkConfig, SparkFlex.ResetMode.kResetSafeParameters, SparkFlex.PersistMode.kPersistParameters);
 
         MotorPositionLimits limits;
         try {
@@ -199,12 +185,6 @@ public class MotorControllerFactory {
         return new SOTA_SparkFlex(config, mMotor, limits);
     }
 
-    /**
-     * Generates a TalonSRX as a SOTA_MotorController
-     * 
-     * @param config The MotorContollerConfig used to configure the motor
-     * @return Returns a SOTA_TalonSRX
-     */
     private static SOTA_TalonSRX generateTalonSRXDelegate(MotorControllerConfig config) {
 
         double nativeCPR = config.getCountsPerRevolution();
@@ -214,11 +194,13 @@ public class MotorControllerFactory {
         motor.setInverted(config.getIsInverted());
 
         Optional.ofNullable(config.getNeutralOperation()).ifPresent((neutralOp) -> {
-            switch (config.getNeutralOperation()) {
+            switch (neutralOp) {
                 case "BRAKE":
                     motor.setNeutralMode(NeutralMode.Brake);
+                    break;
                 case "COAST":
                     motor.setNeutralMode(NeutralMode.Coast);
+                    break;
             }
         });
 
@@ -239,5 +221,4 @@ public class MotorControllerFactory {
 
         return new SOTA_TalonSRX(motor, limits, nativeCPR);
     }
-
 }

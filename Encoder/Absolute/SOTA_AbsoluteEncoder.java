@@ -5,7 +5,7 @@
 package SOTAlib.Encoder.Absolute;
 
 /** Add your docs here. */
-public interface SOTA_AbsoulteEncoder {
+public interface SOTA_AbsoluteEncoder {
 
     /**
      * Gets the position of the encoder in rotations.
